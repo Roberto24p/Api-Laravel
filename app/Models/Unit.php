@@ -21,4 +21,8 @@ class Unit extends Model
     public function scouts(){
         return $this->hasMany(Scout::class);
     }
+
+    public function group(){
+        return $this->belongsTo(Group::class);
+    }
 }

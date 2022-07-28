@@ -17,10 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('addres');
-            $table->string('img_url');
-            $table->unsignedBigInteger('association_id');
-
-            $table->foreign('association_id')->references('id')->on('associations')->onDelete('cascade');
+            $table->string('img_url')->nullable();
             $table->timestamps();
         });
     }

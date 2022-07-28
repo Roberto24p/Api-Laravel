@@ -11,10 +11,18 @@ class Directing extends Model
     protected $fillable = [
         'name',
         'last_name',
-        'age',
-        'user_id',
         'group_id',
         'unit_id',
+        'born_date',
+        'user_id',
+        'phone',
+        'gender',
+        'email',
+        'image',
+        'nacionality',
+        'user_id',
+        'type_blood',
+        'dni'
     ];
 
     public function user(){

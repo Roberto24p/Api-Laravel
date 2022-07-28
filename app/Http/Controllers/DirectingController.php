@@ -3,21 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Directing;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DirectingController extends Controller
 {
     public function store(Request $request)
     {
-
-        $directing = Directing::create([
-            'name' => $request->name,
-            'last_name' => $request->last_name,
-            'age' => $request->age,
-            'user_id' => $request->user_id,
-            'group_id' => $request->group_id,
-            'unit_id' => $request->unit_id
-        ]);
+        $user = User::create(
+            [
+                'name' => $request->name,
+                'email' => $request->email,
+        		'password' => Hash::make($request->dni),
+            ]
+        );
+        $request->merge(['user_id' => $user->id]) ;
+        $directing = Directing::create($request->all());
 
         $directing->roles()->attach($request->role_id);
 

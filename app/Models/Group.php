@@ -12,12 +12,7 @@ class Group extends Model
         'name',
         'addres',
         'img_url',
-        'association_id',
     ];
-
-    public function association(){
-        return $this->belongsTo(Association::class);
-    }
 
     public function directings(){
         return $this->hasMany(Directing::class);

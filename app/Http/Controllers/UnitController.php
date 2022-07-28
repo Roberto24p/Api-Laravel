@@ -17,7 +17,7 @@ class UnitController extends Controller
     }
 
     public function index(){
-        $units = Unit::all();
+        $units = Unit::with('group')->get();
         return response()->json(
             $units
         );
@@ -45,3 +45,10 @@ class UnitController extends Controller
  
     }
 }
+
+
+
+
+
+
+
