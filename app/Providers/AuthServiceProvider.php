@@ -29,6 +29,14 @@ class AuthServiceProvider extends ServiceProvider
             'get-groups' => 'Get all groups',
             'get-directings' => 'Get all directings'
         ]);
+        // Passport::tokensCan([
+        //     'token-superadmin' => 'Get all groups',
+        //     'token-admin' => 'Get all directings',
+        //     'token-secretaria' => 'Get all directings',
+        //     'token-dirgroup' => 'Get all directings',
+        //     'token-dirunit' => 'Get all directings',
+        //     'token-scout' => 'Get all directings'
+        // ]);
         Passport::routes();
         //
     }

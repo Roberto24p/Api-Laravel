@@ -85,4 +85,6 @@ class ScoutController extends Controller
             'message' => 'Scout eliminado con exito'
         ]);
     }
+
+    
 }

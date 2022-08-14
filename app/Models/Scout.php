@@ -27,15 +27,23 @@ class Scout extends Model
     ];
 
 
-    public function insignias(){
+    public function insignias()
+    {
         return $this->belongsToMany(Insignia::class);
     }
 
-    public function group(){
+    public function group()
+    {
         return $this->belongsTo(Group::class);
     }
 
-    public function unit(){
+    public function unit()
+    {
         return $this->belongsTo(Unit::class);
+    }
+    
+    public function topics()
+    {
+        return $this->belongsToMany(Topic::class);
     }
 }

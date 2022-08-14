@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('associations', function (Blueprint $table) {
+        Schema::create('recognitions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('addres');
-            $table->string('img_url');
+            $table->unsignedBigInteger('advance_plan_id');
+            $table->foreign('advance_plan_id')->references('id')->on('advance_plans')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('associations');
+        Schema::dropIfExists('recognitions');
     }
 };

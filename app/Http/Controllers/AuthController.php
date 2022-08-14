@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use  App\Models\User;
+use  App\Models\Scout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        
         $request->validate([
             'email' => 'required|email',
     		'password' => 'required',
@@ -21,9 +22,12 @@ class AuthController extends Controller
         
     	if (Auth::attempt($credentials)) {
 			$user = $request->user();
+			
 			// $user = Auth::user();
-			$success['token'] = $user->createToken('App')->accessToken;
-			return response()->json(['success' => $success], 200);
+			// $success['token'] = $user->createToken('get-groups')->accessToken;
+			$success['token'] = $user->createToken('MyApp', ['*'])->accessToken;
+
+			return response()->json(['token' => $success, 'success' => 1,'user' => $user], 200);
 		}
 		else {
 			return response()->json(['error' => 'Unauthorized'], 401);
@@ -46,7 +50,7 @@ class AuthController extends Controller
         ]);
         
     	$success['name'] = $user->name;
-    	$success['token'] = $user->createToken('MyApp')->accessToken;
+    	$success['token'] = $user->createToken('get-groups')->accessToken;
     	return response()->json(['success' => $success], 200);
     }
    
@@ -63,7 +67,7 @@ class AuthController extends Controller
 			$user = $request->user();
 			// $user = Auth::user();
 			$success['token'] = $user->createToken('MyApp', ['*'])->accessToken;
-			return response()->json(['success' => $success], 200);
+			return response()->json(['token' => $success, 'success' => 1, 'user' => $user], 200);
 		}
 		else {
 			return response()->json(['error' => 'Unauthorized'], 401);
@@ -88,5 +92,45 @@ class AuthController extends Controller
 		$success['token'] = $user->createToken('Sudo', ['get-groups'])->accessToken;
 		return response()->json(['success' => $success], 200);
 	}
+
+	public function singIn(Request $request)
+	{
+		$request->validate([
+			'name' => 'required',
+			'email' => 'required|email'
+		]);
+		$idPerson = DB::table('persons')
+			->insertGetId([
+				'name' => $request->name,
+				'last_name' => $request->lastName,
+				'dni' => $request->dni,
+				'born_date' => $request->bornDate,
+				'type_blood' => $request->typeBlood,
+				'phone' => $request->phone,
+				'gender' => $request->gender,
+				'image' => '',
+				'nacionality' => 'Ecuador'
+			]);
+		User::create([
+			'name' => $request->name,
+			'email' => $request->email,
+			'password' => bcrypt($request->dni),
+			'person_id' => $idPerson
+		]);
+
+		$scoutId = DB::table('scouts')
+			->insertGetId([
+				'person_id' => $idPerson,
+				'type' => ''
+			]);
+
+
+
+		return response()->json([
+			'scout' => $scoutId,
+			'success' => 1
+		]);
+	}
+
 
 }

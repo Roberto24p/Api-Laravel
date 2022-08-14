@@ -13,12 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('units', function (Blueprint $table) {
+        Schema::create('inscription_scout', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->unsignedBigInteger('period_id');
+            $table->unsignedBigInteger('scout_id');
             $table->unsignedBigInteger('group_id');
-            $table->string('img_url')->nullable();
+            $table->string('observations');
+            $table->enum('state_inscription', ['espera', 'confirmado', 'denegado']);
+            $table->foreign('scout_id')->references('id')->on('scouts')->onDelete('cascade');
+            $table->foreign('period_id')->references('id')->on('periods')->onDelete('cascade');
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
@@ -30,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('units');
+        Schema::dropIfExists('inscription_scout');
     }
 };

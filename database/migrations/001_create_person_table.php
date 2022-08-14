@@ -13,24 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('scouts', function (Blueprint $table) {
+        Schema::create('persons', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('last_name');
             $table->string('dni');
-            $table->integer('born_date');
+            $table->date('born_date');
             $table->enum('type_blood', ['+O', '-O', '+A', '-A', '+B', '-B', '-AB', '+AB']);
             $table->string('phone');
             $table->enum('gender', ['1', '0']);
-            $table->string('email');
             $table->string('image')->nullable();
             $table->string('nacionality');
-            $table->unsignedBigInteger('group_id')->nullable();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('unit_id')->nullable();
-            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -42,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('scouts');
+        Schema::dropIfExists('persons');
     }
 };
