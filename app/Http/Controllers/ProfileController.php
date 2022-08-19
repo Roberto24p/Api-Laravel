@@ -26,6 +26,7 @@ class ProfileController extends Controller
         $statusInscription = Inscription::scoutGroupInscription($scout[0]->id);
         if ($statusInscription == null)
             return response()->json([
+                'solo' => $statusInscription,
                 'personalInfo' => $profile,
             ]);
         else

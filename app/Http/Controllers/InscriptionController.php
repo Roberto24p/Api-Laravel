@@ -39,11 +39,12 @@ class InscriptionController extends Controller
     {
         $user = Auth::user();
         $profile = Person::find($user->person_id);
-        $scout = Scout::where('person_id', $profile->id)->get();
-        $resp = Inscription::register($scout[0]->id, $request->group_id);
+        $scout = Scout::where('person_id', $profile->id)->first();
+        $resp = Inscription::register($scout->id, $request->group_id);
         if ($resp)
             return response()->json([
-                'message' => 'Inscripcion Enviada'
+                'message' => 'Inscripcion Enviada',
+                'success' => 1
             ]);
         else
             return response()->json([
@@ -63,5 +64,21 @@ class InscriptionController extends Controller
                 'data' => $data
             ]
         );
+    }
+
+    public function getAllInscriptions(){
+        $inscriptions = Inscription::allInscriptions();
+        return response()->json([
+            'data' => $inscriptions,
+            'succcess' => 1
+        ]);
+    }
+
+    public function putScoutInscription(Request $request){
+        Inscription::putScoutInscription($request->state_inscription, $request->observations, $request->id);
+        return response()->json([
+            'success' => 1
+        ]);
+
     }
 }

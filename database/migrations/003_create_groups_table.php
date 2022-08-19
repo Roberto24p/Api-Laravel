@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('addres');
             $table->string('image')->nullable();
+            $table->string('cod_group')->nullable();
             $table->timestamps();
         });
     }

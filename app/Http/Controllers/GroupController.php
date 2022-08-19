@@ -27,13 +27,11 @@ class GroupController extends Controller
             'name' => 'required',
             'addres' => 'required',
             'img_url' => 'required',
-            'association' => 'required'
         ]);
         $group = Group::create([
             'name' => $validate['name'],
             'addres' => $validate['addres'],
             'img_url' => $validate['img_url'],
-            'association_id' => $validate['association']
         ]);
         return response()->json(
             [
@@ -57,11 +55,11 @@ class GroupController extends Controller
             200
         );
     }
-
+    
     public function destroy($id){
         $group = Group::find($id);
         $group->delete();
-
+        
         return response()->json([
             'message'=> 'Grupo Eliminado'
         ]);

@@ -12,6 +12,7 @@ use App\Http\Controllers\InscriptionController;
 use App\Http\Controllers\AdvancePlanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PeriodController;
+use App\Http\Controllers\FileController;
 use Monolog\Handler\GroupHandler;
 
 /*
@@ -42,17 +43,21 @@ Route::resource('advancePlan', AdvancePlanController::class)->except([
 Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 
 	Route::get('profile', [ProfileController::class, 'show']);
+	Route::post('file', [FileController::class, 'store']);
+	Route::post('filePay', [FileController::class, 'storePay']);
 
 	Route::get('group/validate/{codigo}', [GroupController::class, 'validateGroup']);
 	Route::post('inscription/register', [InscriptionController::class, 'inscription']);
 	Route::get('inscription/group', [InscriptionController::class, 'getScoutInscription']);
 	Route::get('inscription/scout', [ProfileController::class, 'infoInscription']);
+	Route::get('inscription', [InscriptionController::class, 'getAllInscriptions']);
+	Route::post('updateInscription', [InscriptionController::class, 'putScoutInscription']);
 	Route::post('checkadvanceplan', [AdvancePlanController::class, 'checkAdvancePlan']);
 	Route::resource('group', GroupController::class)->except([
 		'edit', 'create'
 	]);
 	Route::resource('period', PeriodController::class);
-	
+	Route::get('nowperiod', [PeriodController::class, 'showPeriodNow']);
 	Route::resource('directing', DirectingController::class)->except([
 		'edit', 'create'
 	]);

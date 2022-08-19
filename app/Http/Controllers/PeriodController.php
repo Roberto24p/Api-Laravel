@@ -30,4 +30,12 @@ class PeriodController extends Controller
             'data' => $inscription
         ]);
     }
+
+    public function showPeriodNow(){
+        $period = Period::periodNow();
+        return response()->json([
+            'response' => $period,
+            'success' => 1
+        ]);
+    }
 }
