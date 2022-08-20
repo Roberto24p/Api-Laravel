@@ -40,7 +40,7 @@ class InscriptionController extends Controller
         $user = Auth::user();
         $profile = Person::find($user->person_id);
         $scout = Scout::where('person_id', $profile->id)->first();
-        $resp = Inscription::register($scout->id, $request->group_id);
+        $resp = Inscription::register($scout->id, $request->group_id, $request->imagePermission, $request->imagePhoto, $request->imagePay);
         if ($resp)
             return response()->json([
                 'message' => 'Inscripcion Enviada',

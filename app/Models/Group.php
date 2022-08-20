@@ -11,7 +11,7 @@ class Group extends Model
     protected $fillable = [
         'name',
         'addres',
-        'img_url',
+        'image',
     ];
 
     public function directings(){

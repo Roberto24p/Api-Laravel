@@ -12,7 +12,7 @@ class Unit extends Model
     protected $fillable = [
         'name',
         'group_id',
-        'img_url',
+        'image',
     ];
     public function directings(){
         return $this->hasMany(Directing::class);

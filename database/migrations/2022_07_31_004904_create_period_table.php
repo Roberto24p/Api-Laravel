@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('periods', function (Blueprint $table) {
             $table->id();
             $table->string('description'); 
+            $table->enum('state', ['Activo', 'Inactivo']);
             $table->date('date_start'); 
             $table->date('date_end');   
             $table->timestamps();

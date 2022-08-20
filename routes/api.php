@@ -45,6 +45,8 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	Route::get('profile', [ProfileController::class, 'show']);
 	Route::post('file', [FileController::class, 'store']);
 	Route::post('filePay', [FileController::class, 'storePay']);
+	Route::post('fileGroup', [FileController::class, 'storeGroup']);
+	Route::post('fileUnit', [FileController::class, 'storeUnit']);
 
 	Route::get('group/validate/{codigo}', [GroupController::class, 'validateGroup']);
 	Route::post('inscription/register', [InscriptionController::class, 'inscription']);

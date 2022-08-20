@@ -17,9 +17,7 @@ return new class extends Migration
             $table->id();
             $table->enum('type', ['manada', 'tropa', 'clan']);
             $table->unsignedBigInteger('person_id')->nullable();
-            $table->unsignedBigInteger('team_id')->nullable();
             $table->foreign('person_id')->references('id')->on('persons')->onDelete('cascade');
-            $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
             $table->timestamps();
         });
     }

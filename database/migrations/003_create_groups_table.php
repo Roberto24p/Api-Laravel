@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('addres');
             $table->string('image')->nullable();
             $table->string('cod_group')->nullable();
+            $table->enum('state', ['A', 'D']);
             $table->timestamps();
         });
     }

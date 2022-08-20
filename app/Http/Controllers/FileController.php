@@ -44,4 +44,21 @@ class FileController extends Controller{
         return false;
     }
 
+    public function storeGroup(Request $request){
+        if($request->file('image')){
+            $images = $request->file('image')->store('public/images/groups/');
+            $url = Storage::url($images);
+            return asset($url);
+        }
+        return false;
+    }
+
+    public function storeUnit(Request $request){
+        if($request->file('image')){
+            $images = $request->file('image')->store('public/images/units');
+            $url = Storage::url($images);
+            return asset($url);
+        }
+    }
+
 }

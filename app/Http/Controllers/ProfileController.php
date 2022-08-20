@@ -22,8 +22,8 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $profile = Person::find($user->person_id);
-        $scout = Scout::where('person_id', $profile->id)->get();
-        $statusInscription = Inscription::scoutGroupInscription($scout[0]->id);
+        $scout = Scout::where('person_id', $profile->id)->first();
+        $statusInscription = Inscription::scoutGroupInscription($scout->id);
         if ($statusInscription == null)
             return response()->json([
                 'solo' => $statusInscription,

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('group_id');
             $table->string('image')->nullable();
             $table->enum('type', ['manada', 'tropa', 'clan']);
+            $table->enum('state', ['A', 'D']);
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
             $table->timestamps();
         });

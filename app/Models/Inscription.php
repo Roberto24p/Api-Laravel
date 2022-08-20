@@ -16,7 +16,7 @@ class Inscription extends Model
         'description'
     ];
 
-    public static function register($scout, $group)
+    public static function register($scout, $group, $permission, $photo, $pay)
     {
         $period = DB::select(DB::raw('SELECT * FROM periods WHERE NOW() between periods.date_start and periods.date_end '));
         $data = DB::table('inscription_scout')
@@ -30,7 +30,10 @@ class Inscription extends Model
                     'group_id' => $group,
                     'scout_id' => $scout,
                     'observations' => '',
-                    'state_inscription' => 'espera'
+                    'state_inscription' => 'espera',
+                    'image_pay' => $pay,
+                    'image_permission' => $permission,
+                    'image_photo' => $photo
                 ]
             );
         return $data;
@@ -40,11 +43,16 @@ class Inscription extends Model
     {
         $now =  DB::select(DB::raw('SELECT NOW() as date'));
         $now = $now[0]->date;
-        $group = DB::select(DB::raw('SELECT * FROM inscription_scout INNER JOIN groups on groups.id = inscription_scout.group_id inner join periods on periods.id = inscription_scout.period_id where NOW() between periods.date_start and periods.date_end and inscription_scout.scout_id = ' . $scoutId));
+        // $group = DB::select(DB::raw('SELECT * FROM inscription_scout INNER JOIN groups on groups.id = inscription_scout.group_id inner join periods on periods.id = inscription_scout.period_id where NOW() between periods.date_start and periods.date_end and inscription_scout.scout_id = ' . $scoutId));
+        $group = DB::select(DB::raw('SELECT * FROM inscription_scout INNER JOIN groups on groups.id = inscription_scout.group_id inner join periods on periods.id = inscription_scout.period_id where periods.state = "Activo" and inscription_scout.scout_id = ' . $scoutId));
+        $group = DB::table('inscription_scout')
+                ->join('groups as g', 'g.id', '=', 'inscription_scout.group_id')
+                ->join('periods as p', 'p.id', '=', 'inscription_scout.period_id')
+                ->where('p.state', 'Activo')->where('inscription_scout.scout_id', $scoutId)->first() ;
         if ($group == null) {
             return 0;
         } else {
-            return $group[0];
+            return $group;
         }
     }
 
@@ -54,7 +62,7 @@ class Inscription extends Model
             ->join('scouts', 'scouts.id', '=', 'inscription_scout.scout_id')
             ->join('persons', 'persons.id', '=', 'scouts.person_id')
             ->join('groups', 'groups.id', '=', 'inscription_scout.group_id')
-            ->select('groups.name as group', 'inscription_scout.state_inscription as state_inscription', 'persons.name as name', 'scouts.type as type', 'inscription_scout.id', 'scouts.image_permissions', 'scouts.image_pay')->get();
+            ->select('inscription_scout.image_photo','inscription_scout.image_permission','inscription_scout.image_pay','groups.name as group', 'inscription_scout.state_inscription as state_inscription', 'persons.name as name', 'scouts.type as type', 'inscription_scout.id')->get();
         return $inscriptions;
     }
 

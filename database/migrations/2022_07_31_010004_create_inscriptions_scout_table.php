@@ -19,6 +19,9 @@ return new class extends Migration
             $table->unsignedBigInteger('scout_id');
             $table->unsignedBigInteger('group_id');
             $table->string('observations');
+            $table->string('image_pay');
+            $table->string('image_permission');
+            $table->string('image_photo');
             $table->enum('state_inscription', ['espera', 'confirmado', 'denegado']);
             $table->foreign('scout_id')->references('id')->on('scouts')->onDelete('cascade');
             $table->foreign('period_id')->references('id')->on('periods')->onDelete('cascade');
