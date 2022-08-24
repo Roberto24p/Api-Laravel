@@ -6,6 +6,7 @@ use App\Models\Group;
 use App\Models\Scout;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class ScoutController extends Controller
@@ -28,12 +29,21 @@ class ScoutController extends Controller
         ]);
     }
 
+    // public function showByGroup($id)
+    // {
+    //     $scout = Scout::where('group_id', $id)->get();
+
+    //     return response()->json([
+    //         'data' => $scout
+    //     ]);
+    // }
+
     public function showByGroup($id)
     {
-        $scout = Scout::where('group_id', $id)->get();
-
+        $scouts = Scout::scoutsInscritosByGroup($id);
         return response()->json([
-            'data' => $scout
+            'success' => 1,
+            'scouts' => $scouts
         ]);
     }
 
@@ -51,10 +61,10 @@ class ScoutController extends Controller
             [
                 'name' => $request->name,
                 'email' => $request->email,
-        		'password' => Hash::make($request->dni),
+                'password' => Hash::make($request->dni),
             ]
         );
-        $request->merge(['user_id' => $user->id]) ;
+        $request->merge(['user_id' => $user->id]);
         $scout = Scout::create($request->all());
         return response()->json([
             'data' => $scout,
@@ -86,5 +96,13 @@ class ScoutController extends Controller
         ]);
     }
 
-    
+    public function validateTeam($scout)
+    {
+        $scout = Scout::find($scout);
+        $scoutTeam = $scout->teams()->first();
+        return response()->json([
+            'success' => 1,
+            'scoutTeam' => $scoutTeam
+        ]);
+    }
 }

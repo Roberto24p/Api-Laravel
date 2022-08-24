@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Team extends Model
 {
@@ -11,8 +12,17 @@ class Team extends Model
     protected $fillable = [
         'name',
         'unit_id',
+        'state'
     ];
-    public function units(){
+    public function unit(){
         return $this->belongsTo(Unit::class);
+    }
+
+    public function scouts(){
+        return $this->belongsToMany(Scout::class);
+    }
+
+    public static function teamByUnit($unit){
+       
     }
 }

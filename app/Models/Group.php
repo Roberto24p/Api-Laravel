@@ -12,6 +12,7 @@ class Group extends Model
         'name',
         'addres',
         'image',
+        'state'
     ];
 
     public function directings(){
@@ -21,4 +22,6 @@ class Group extends Model
     public function scouts(){
         return $this->hasMany(Scout::class);
     }
+
+     
 }

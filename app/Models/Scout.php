@@ -4,33 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Scout extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'last_name',
-        'group_id',
-        'unit_id',
-        'born_date',
-        'user_id',
-        'phone',
-        'gender',
-        'email',
-        'image',
-        'nacionality',
-        'user_id',
-        'type_blood',
-        'dni'
-    ];
+    // protected $fillable = [
+    //     'name',
+    //     'last_name',
+    //     'group_id',
+    //     'unit_id',
+    //     'born_date',
+    //     'user_id',
+    //     'phone',
+    //     'gender',
+    //     'email',
+    //     'image',
+    //     'nacionality',
+    //     'user_id',
+    //     'type_blood',
+    //     'dni'
+    // ];
 
 
-    public function insignias()
-    {
-        return $this->belongsToMany(Insignia::class);
-    }
+
 
     public function group()
     {
@@ -41,9 +39,35 @@ class Scout extends Model
     {
         return $this->belongsTo(Unit::class);
     }
-    
+
     public function topics()
     {
         return $this->belongsToMany(Topic::class);
+    }
+
+    public function person()
+    {
+        return $this->belongsTo(Person::class);
+    }
+
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class);
+    }
+
+    public static function scoutsInscritosByGroup($group)
+    {
+        $result = DB::table('inscription_scout as is')
+            ->join('periods as p', 'p.id', '=', 'is.period_id')
+            ->join('scouts as s', 's.id', '=', 'is.scout_id')
+            ->join('groups as g', 'g.id', '=', 'is.group_id')
+            ->join('persons as per', 'per.id', '=', 's.person_id')
+            ->where('g.state', 'A')
+            ->where('p.state', 'Activo')
+            ->where('is.state_inscription', 'confirmado')
+            ->where('g.id', $group)
+            ->select('g.name as group_name', 'per.name', 'per.born_date', 's.type', 's.id', 'per.last_name')
+            ->get();
+        return $result;
     }
 }

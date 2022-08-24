@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Unit;
 use App\Models\Team;
+use App\Models\Inscription;
+use App\Models\Scout;
 use Illuminate\Http\Request;
 
 class UnitController extends Controller
@@ -49,7 +51,7 @@ class UnitController extends Controller
 
     public function index()
     {
-        $units = Unit::with('group')->get();
+        $units = Unit::where('state', 'A')->with('group')->get();
         return response()->json(
             $units
         );
@@ -63,19 +65,34 @@ class UnitController extends Controller
         );
     }
 
+
     public function destroy($id)
     {
         $unit = Unit::find($id);
-        $unit->delete();
+        $unit->update([
+            'state' => 'D'
+        ]);
 
         return response()->json(
-            ['message' => 'Unidad eliminada']
+            [
+                'message' => 'Unidad eliminada',
+                'group' => $unit
+            ]
         );
     }
 
     public function showByGroup($id)
     {
         $unitsByGroup = Unit::where('group_id', $id)->get();
+        return $unitsByGroup;
+    }
+
+    public function showByScout($id)
+    {
+        $profile = Scout::find($id);
+        $group = Inscription::getGroupByScoutInscription($id);
+        $unitsByGroup = Unit::where('group_id', $group->group_id)->where('type', $profile->type)->with('teams')->get();
+
         return $unitsByGroup;
     }
 }

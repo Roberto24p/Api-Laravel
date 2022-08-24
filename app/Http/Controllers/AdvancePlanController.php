@@ -58,6 +58,13 @@ class AdvancePlanController extends Controller
         return $response;
     }
 
+    public function getTopicsChecked($scoutId){
+        $topics = Topic::topicsScout($scoutId);
+        return response()->json([
+            'topics' => $topics
+        ]);
+    }
+
     public function checkAdvancePlan(Request $request){
         $scout = Scout::find($request->scout_id);
         $scout->topics()->attach($request->topic_id);
@@ -67,4 +74,14 @@ class AdvancePlanController extends Controller
             'message' => 'Registrado el Tema'
         ]);
     }
+    // public function checkAdvancePlan(Request $request){
+    //     $scout = Scout::find($request->scout_id);
+    //     Topic::attachScoutTeam($scout->id, $request->team_id, $request->topic_id);
+    //     // $scout->topics()->attach($request->topic_id);
+    //     $topics = Topic::topicsScout($request->scout_id);
+    //     return response()->json([
+    //         'topics' => $topics,
+    //         'message' => 'Registrado el Tema'
+    //     ]);
+    // }
 }

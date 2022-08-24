@@ -19,8 +19,24 @@ class Topic extends Model
         return $this->belongsToMany(Scout::class);
     }
 
-    public static function topicsScout($scoutId){
+    public static function topicsScout($scoutId)
+    {
         $data = DB::table('scout_topic')->where('scout_id', $scoutId)->get();
         return $data;
+    }
+
+    public static function attachScoutTeam($scoutId, $teamId, $topicId)
+    {
+        $db = DB::table('scout_topic')->where('topic_id', $topicId)->where('scout_id', $scoutId)->where('team_id', $teamId)->delete();
+        if ($db == 0) {
+            $db = DB::table('scout_topic')
+                ->insert([
+                    'topic_id' => $topicId,
+                    'team_id' => $teamId,
+                    'scout_id' => $scoutId
+                ]);
+        }
+
+        return $db;
     }
 }

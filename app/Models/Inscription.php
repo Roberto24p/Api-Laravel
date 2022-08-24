@@ -62,7 +62,7 @@ class Inscription extends Model
             ->join('scouts', 'scouts.id', '=', 'inscription_scout.scout_id')
             ->join('persons', 'persons.id', '=', 'scouts.person_id')
             ->join('groups', 'groups.id', '=', 'inscription_scout.group_id')
-            ->select('inscription_scout.image_photo','inscription_scout.image_permission','inscription_scout.image_pay','groups.name as group', 'inscription_scout.state_inscription as state_inscription', 'persons.name as name', 'scouts.type as type', 'inscription_scout.id')->get();
+            ->select('inscription_scout.image_photo','inscription_scout.image_permission','inscription_scout.image_pay','groups.name as group', 'inscription_scout.state_inscription as state_inscription', 'persons.name as name', 'scouts.type as type', 'inscription_scout.id', 'persons.last_name', 'persons.dni', 'persons.type_blood', 'persons.phone', 'persons.gender', 'persons.born_date' )->get();
         return $inscriptions;
     }
 
@@ -77,5 +77,14 @@ class Inscription extends Model
                 'state_inscription' => $state
             ]);
         return $validate;
+    }
+
+
+    public static function getGroupByScoutInscription($scout_id){
+        $result = DB::table('inscription_scout as ins')
+            ->join('periods as p', 'p.id', '=', 'ins.period_id')
+            ->where('ins.scout_id', $scout_id)
+            ->where('p.state', 'Activo')->first();
+        return $result;
     }
 }

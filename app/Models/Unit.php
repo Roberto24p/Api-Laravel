@@ -13,6 +13,10 @@ class Unit extends Model
         'name',
         'group_id',
         'image',
+        'state'
+    ];
+    protected $with = [
+        'group'
     ];
     public function directings(){
         return $this->hasMany(Directing::class);
@@ -25,4 +29,10 @@ class Unit extends Model
     public function group(){
         return $this->belongsTo(Group::class);
     }
+
+    public function teams(){
+        return $this->hasMany(Team::class);
+    }
+
+
 }

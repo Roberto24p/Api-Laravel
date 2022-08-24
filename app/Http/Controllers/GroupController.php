@@ -12,7 +12,7 @@ class GroupController extends Controller
 {
     public function index()
     {
-        return Group::all();
+        return Group::where('state', 'A')->get();
     }
 
     public function show($id){
@@ -95,7 +95,9 @@ class GroupController extends Controller
     
     public function destroy($id){
         $group = Group::find($id);
-        $group->delete();
+        $group->update([
+            'state' => 'D'
+        ]);
         
         return response()->json([
             'message'=> 'Grupo Eliminado'
