@@ -13,6 +13,7 @@ use App\Http\Controllers\AdvancePlanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeamController;
 use Monolog\Handler\GroupHandler;
 
@@ -43,6 +44,10 @@ Route::resource('advancePlan', AdvancePlanController::class)->except([
 
 // Route for admin permissions
 Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
+
+
+	Route::post('validate', [AuthController::class, 'validateToken']);
+
 
 	Route::get('profile', [ProfileController::class, 'show']);
 
@@ -85,14 +90,17 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 		'edit', 'create'
 	]);
 	Route::get('scout/group/{scout}', [ScoutController::class, 'showByGroup']);
-	Route::get('scout/unit/{scout}', [ScoutController::class, 'showByUnit']);
+	// Route::get('scout/unit/{scout}', [ScoutController::class, 'showByUnit']);
 	Route::get('scout/validate/{scoutid}', [ScoutController::class, 'validateTeam']);
+	Route::get('scout/unit/{unitid}', [ScoutController::class, 'scoutsByUnit']);
 
 	
 	Route::resource('user', UserController::class)->except([
 		'edit', 'create'
 	]);
 	
+
+	Route::resource('role', RoleController::class);
 
 	Route::resource('team', TeamController::class);
 	Route::get('team/unit/{unitid}', [TeamController::class, 'getByUnit']);

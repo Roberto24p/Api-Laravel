@@ -10,15 +10,29 @@ class Person extends Model
     use HasFactory;
 
     protected $table = 'persons';
+    protected $fillable = [
+        'name',
+        'last_name',
+        'born_date',
+        'phone',
+        'gender',
+        'email',
+        'image',
+        'nacionality',
+        'type_blood',
+        'dni'
+    ];
     protected $with = [
         'user',
         'scout'
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->hasOne(User::class);
     }
-    public function scout(){
+    public function scout()
+    {
         return $this->hasOne(Scout::class);
     }
 }

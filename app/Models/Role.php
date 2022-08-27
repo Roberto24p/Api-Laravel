@@ -12,4 +12,8 @@ class Role extends Model
     public function directings(){
         return $this->belongsToMany(Directing::class);
     }
+
+    public function roles(){
+        return $this->belongsToMany(Role::class);
+    }
 }

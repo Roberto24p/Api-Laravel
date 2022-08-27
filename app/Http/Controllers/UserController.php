@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Person;
+use App\Models\Scout;
 
 class UserController extends Controller
 {
@@ -14,8 +16,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::all();
+        return User::with(['person', 'roles'])->get();
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -35,7 +38,33 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $personId = Person::create([
+            'name' => $request->name,
+            'last_name' => $request->last_name,
+            'dni' => $request->dni,
+            'born_date' => $request->date_born,
+            'phone' => $request->phone,
+            'gender' => $request->gender,
+            'nacionality' => $request->nacionality
+        ]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->dni),
+            'person_id' => $personId->id
+        ]);
+        $user->roles()->attach($request->role);
+        if ($request->role == 6) {
+            Scout::create([
+                'person_id' => $personId->id,
+                'type' => 'tropa'
+            ]);
+        }
+
+        return response()->json([
+            'success' => 1,
+            'message' => 'Usuario creado con exito'
+        ]);
     }
 
     /**
@@ -69,7 +98,30 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::find($id);
+        $user->update([
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'name' => $request->name
+        ]);
+        $user->save();
+        $person = Person::find($user->person()->first()->id);
+        $person->update([
+            'name' => $request->name,
+            'last_name' => $request->last_name,
+            'dni' => $request->dni,
+            'born_date' => $request->date_born,
+            'phone' => $request->phone,
+            'gender' => $request->gender,
+            'nacionality' => $request->nacionality
+        ]);
+        $person->save();
+        $user->roles()->attach($request->role);
+        
+        return response()->json([
+            'success' => 1,
+            'message' => 'Actualizado con exito'
+        ]);
     }
 
     /**

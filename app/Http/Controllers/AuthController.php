@@ -11,6 +11,20 @@ use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
+	public function validateToken(Request $request){
+		$user = Auth::user();
+		$userData = User::find($user->id);
+		$role = $userData ->roles()->first();
+		return response()->json([
+			'user'=> [
+				'name' => $user->name,
+				'email' => $user->email,
+				'role' => $role->id
+			],
+			'token' => $request->token
+		]);
+	}
+
     public function login(Request $request)
     {
         $request->validate([

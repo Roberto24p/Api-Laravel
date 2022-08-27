@@ -105,4 +105,13 @@ class ScoutController extends Controller
             'scoutTeam' => $scoutTeam
         ]);
     }
+
+    public function scoutsByUnit($unit)
+    {
+        $scouts = Scout::scoutsByTeam($unit);
+        return response()->json([
+            'success' => 1,
+            'scouts' => $scouts
+        ]);
+    }
 }
