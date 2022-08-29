@@ -35,4 +35,8 @@ class Person extends Model
     {
         return $this->hasOne(Scout::class);
     }
+    public function directing()
+    {
+        return $this->hasOne(Directing::class);
+    }
 }

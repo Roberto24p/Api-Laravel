@@ -114,4 +114,12 @@ class ScoutController extends Controller
             'scouts' => $scouts
         ]);
     }
+
+    public function getData($scoutId){
+        $scout = Scout::where('id', $scoutId)->with('person')->first();
+        return response()->json([
+            'success' => 1,
+            'scout' => $scout
+        ]);
+    }
 }

@@ -1,13 +1,26 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\Team;
+use App\Models\Person;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
 class TeamController extends Controller
 {
+ 
     public function index(){
         $teams = Team::with('unit')->where('state', 'A')->get();
+        return response()->json([
+            'response' => 1,
+            'teams' => $teams
+        ]);
+    }
+
+    public function teamByDirecting(){
+        $user = Auth::user();
+        $directing = Person::with('directing')->where('id', $user->person_id)->first()->directing;
+        $teams = Team::with('unit')->where('unit_id', $directing->unit_id)->get();
         return response()->json([
             'response' => 1,
             'teams' => $teams

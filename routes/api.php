@@ -35,6 +35,7 @@ Route::post('singIn', [AuthController::class, 'singIn']);
 
 
 Route::get('advancePlan/{id}', [AdvancePlanController::class, 'recognitionsWithItems']);
+Route::get('advancePlan/scout/{id}', [AdvancePlanController::class, 'recognitionsWithItemsByScout']);
 Route::post('advancePlanUpdate', [AdvancePlanController::class, 'updateAdvancePlan']);
 Route::get('advancePlanChecks/{scoutId}', [AdvancePlanController::class, 'getTopicsChecked']);
 
@@ -44,6 +45,10 @@ Route::resource('advancePlan', AdvancePlanController::class)->except([
 
 // Route for admin permissions
 Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
+
+	Route::get('advanceplan/percent/{id}', [AdvancePlanController::class, 'percentAdvancePlan']);
+
+
 
 
 	Route::post('validate', [AuthController::class, 'validateToken']);
@@ -55,6 +60,7 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	Route::post('filePay', [FileController::class, 'storePay']);
 	Route::post('fileGroup', [FileController::class, 'storeGroup']);
 	Route::post('fileUnit', [FileController::class, 'storeUnit']);
+	Route::post('fileAvatar', [FileController::class, 'storeAvatar']);
 
 
 	Route::post('inscription/register', [InscriptionController::class, 'inscription']);
@@ -62,11 +68,11 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	Route::get('inscription/scout', [ProfileController::class, 'infoInscription']);
 	Route::get('inscription', [InscriptionController::class, 'getAllInscriptions']);
 	Route::post('updateInscription', [InscriptionController::class, 'putScoutInscription']);
-
 	Route::post('checkadvanceplan', [AdvancePlanController::class, 'checkAdvancePlan']);
 
 	
 	Route::get('group/validate/{codigo}', [GroupController::class, 'validateGroup']);
+	Route::get('group/activate/{groupId}', [GroupController::class, 'activate']);
 	Route::resource('group', GroupController::class)->except([
 		'edit', 'create'
 	]);
@@ -80,6 +86,8 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 		'edit', 'create'
 	]);
 
+	Route::get('unit/activate/{unitId}', [UnitController::class, 'activate']);
+	Route::get('unit/directing', [UnitController::class, 'indexByDirecting']);
 	Route::get('unit/scout/{scoutid}', [UnitController::class, 'showByScout']);
 	Route::get('unit/group/{group}', [UnitController::class, 'showByGroup']);
 	Route::resource('unit', UnitController::class)->except([
@@ -89,6 +97,8 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	Route::resource('scout', ScoutController::class)->except([
 		'edit', 'create'
 	]);
+	Route::get('scout/info/{scoutId}', [ScoutController::class, 'getData']);
+
 	Route::get('scout/group/{scout}', [ScoutController::class, 'showByGroup']);
 	// Route::get('scout/unit/{scout}', [ScoutController::class, 'showByUnit']);
 	Route::get('scout/validate/{scoutid}', [ScoutController::class, 'validateTeam']);
@@ -103,6 +113,7 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	Route::resource('role', RoleController::class);
 
 	Route::resource('team', TeamController::class);
+	Route::get('teams/directing', [TeamController::class, 'teamByDirecting']);
 	Route::get('team/unit/{unitid}', [TeamController::class, 'getByUnit']);
 	Route::post('team/scout/', [TeamController::class, 'teamScout']);
 });

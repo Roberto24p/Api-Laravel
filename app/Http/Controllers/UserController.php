@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Person;
 use App\Models\Scout;
+use App\Models\Directing;
 
 class UserController extends Controller
 {
@@ -38,7 +39,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $personId = Person::create([
+        $person = Person::create([
             'name' => $request->name,
             'last_name' => $request->last_name,
             'dni' => $request->dni,
@@ -51,13 +52,18 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->dni),
-            'person_id' => $personId->id
+            'person_id' => $person->id
         ]);
         $user->roles()->attach($request->role);
         if ($request->role == 6) {
             Scout::create([
-                'person_id' => $personId->id,
+                'person_id' => $person->id,
                 'type' => 'tropa'
+            ]);
+        }else if($request->role == 4 || $request->role == 5){
+            Directing::create([
+                'unit_id' => $request->unit_id,
+                'person_id' => $person->id
             ]);
         }
 

@@ -66,9 +66,11 @@ class Scout extends Model
             ->join('teams as t', 't.id', '=', 'st.team_id')
             ->join('units as u', 'u.id', '=', 't.unit_id')
             ->where('u.id', $unit)
-            ->select('p.name','p.last_name', 't.id as team_id', 'u.id as unit_id', 't.name as team_name')
+            ->select('p.name','p.last_name', 't.id as team_id', 'u.id as unit_id', 't.name as team_name', 's.id as scout_id')
             ->get();
 
         return $result;
     }
+
+  
 }

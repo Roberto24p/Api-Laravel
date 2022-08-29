@@ -6,7 +6,10 @@ use App\Models\Unit;
 use App\Models\Team;
 use App\Models\Inscription;
 use App\Models\Scout;
+use App\Models\Person;
+use App\Models\Directing;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UnitController extends Controller
 {
@@ -51,12 +54,20 @@ class UnitController extends Controller
 
     public function index()
     {
-        $units = Unit::where('state', 'A')->with('group')->get();
+        $units = Unit::with('group')->orderBy('state')->get();
         return response()->json(
             $units
         );
     }
 
+    public function indexByDirecting()
+    {
+        $user = Auth::user();
+        $directing = Person::with('directing')->where('id', $user->person_id)->first()->directing;
+        $unit = Unit::find($directing->unit_id);
+        $units = Unit::where('group_id', $unit->group_id)->get();
+        return $units;
+    }
     public function show($id)
     {
         $unit = Unit::find($id);
@@ -94,5 +105,18 @@ class UnitController extends Controller
         $unitsByGroup = Unit::where('group_id', $group->group_id)->where('type', $profile->type)->with('teams')->get();
 
         return $unitsByGroup;
+    }
+
+    public function activate($unitId)
+    {
+        $unit = Unit::find($unitId);
+        $unit->update([
+            'state' => 'A'
+        ]);
+        $unit->save();
+
+        return response()->json([
+            'success' => 1
+        ]);
     }
 }

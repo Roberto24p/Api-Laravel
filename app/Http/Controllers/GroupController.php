@@ -12,7 +12,7 @@ class GroupController extends Controller
 {
     public function index()
     {
-        return Group::where('state', 'A')->get();
+        return Group::orderBy('state')->get();
     }
 
     public function show($id){
@@ -109,5 +109,18 @@ class GroupController extends Controller
         return response()->json([
             'group' => $group
         ]);
+    }
+
+    public function activate($groupid){
+        $group = Group::find($groupid);
+        $group->update([
+            'state' => 'A'
+        ]);
+        $group->save();
+        return response()->json([
+            'success' => 1,
+            'group' => $group
+        ]);
+        
     }
 }

@@ -9,20 +9,9 @@ class Directing extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name',
-        'last_name',
-        'group_id',
         'unit_id',
-        'born_date',
         'user_id',
-        'phone',
-        'gender',
-        'email',
-        'image',
-        'nacionality',
-        'user_id',
-        'type_blood',
-        'dni'
+        'person_id'
     ];
 
     public function user(){
@@ -31,6 +20,10 @@ class Directing extends Model
 
     public function group(){
         return $this->belongsTo(Group::class);
+    }
+    
+    public function person(){
+        return $this->belongsTo(Person::class);
     }
 
     public function roles(){
