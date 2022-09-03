@@ -98,6 +98,19 @@ class UnitController extends Controller
         return $unitsByGroup;
     }
 
+
+    // public function showToDirecting()
+    // {
+    //     $user = Auth::user();
+    //     $directing = Person::with('directing')->where('id', $user->person_id)->first()->directing;
+    //     $group = Unit::where('id', $directing->unit_id)->first()->group;
+    //     $units = Unit::where('group_id', $group->id);
+    //     return response()->json([
+    //         'success' => 1,
+    //         'units' => $units
+    //     ]);
+    // }
+
     public function showByScout($id)
     {
         $profile = Scout::find($id);

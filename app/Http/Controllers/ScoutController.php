@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Team;
 use App\Models\Scout;
+use App\Models\Unit;
+use App\Models\Person;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,10 +43,33 @@ class ScoutController extends Controller
 
     public function showByGroup($id)
     {
-        $scouts = Scout::scoutsInscritosByGroup($id);
+        $user = Auth::user();
+        $directing = Person::with('directing')->where('id', $user->person_id)->first()->directing;
+        $unit = Unit::where('id', $directing->unit_id)->first();
+        $scouts = Scout::scoutsInscritosByGroup($unit->group_id);
         return response()->json([
             'success' => 1,
             'scouts' => $scouts
+        ]);
+    }
+
+    public function scoutsByDirecting()
+    {
+        $user = Auth::user();
+        $directing = Person::with('directing')->where('id', $user->person_id)->first()->directing;
+        // $scouts = [];
+        // // $teams = Team::where('unit_id', $directing->unit_id)->with('scouts')->get();
+        // // foreach($teams as $team){
+        // //     foreach($team->scouts as $scout){
+        // //         array_push($scouts, $scout);
+
+        // //     }
+        // // }
+        $scouts = Scout::scoutsByUnit($directing->unit_id);
+        return response()->json([
+            'success'=>1,
+            'scouts'=> $scouts,
+            'group' => $directing->unit->group->name
         ]);
     }
 
@@ -92,7 +118,8 @@ class ScoutController extends Controller
         $scout->delete();
 
         return response()->json([
-            'message' => 'Scout eliminado con exito'
+            'message' => 'Scout eliminado con exito',
+            'success' => 1
         ]);
     }
 

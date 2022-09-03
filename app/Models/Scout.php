@@ -72,5 +72,17 @@ class Scout extends Model
         return $result;
     }
 
+    public static function scoutsByUnit($unit){
+        $result = DB::table('scouts as s')
+            ->join('scout_team as st', 'st.scout_id', '=', 's.id')
+            ->join('teams as t', 't.id', '=', 'st.team_id')
+            ->join('units as u', 'u.id', '=', 't.unit_id')
+            ->join('persons as p', 'p.id', '=', 's.person_id')
+            ->where('u.id', $unit)
+            ->select( 'p.name', 'p.born_date', 's.type', 's.id', 'p.last_name')
+            ->get();
+        return $result;
+    }
+
   
 }

@@ -18,9 +18,9 @@ class Directing extends Model
         return $this->hasOne(User::class);
     }
 
-    public function group(){
-        return $this->belongsTo(Group::class);
-    }
+    // public function group(){
+    //     return $this->belongsTo(Group::class);
+    // }
     
     public function person(){
         return $this->belongsTo(Person::class);
@@ -28,5 +28,9 @@ class Directing extends Model
 
     public function roles(){
         return $this->belongsToMany(Role::class);
+    }
+
+    public function unit(){
+        return $this->belongsTo(Unit::class);
     }
 }

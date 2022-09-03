@@ -6,6 +6,7 @@ use App\Models\Directing;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DirectingController extends Controller
 {
@@ -57,6 +58,16 @@ class DirectingController extends Controller
 
         return response()->json([
             'message' => 'Dirigente eliminado'
+        ]);
+    }
+
+    public function directingProfile()
+    {
+        $user = Auth::user();
+        $directing = Directing::where('person_id', $user->person_id)->first();
+        return response()->json([
+            'success' => 1,
+            'profile' => $directing->unit
         ]);
 
     }

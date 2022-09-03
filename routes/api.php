@@ -27,6 +27,10 @@ use Monolog\Handler\GroupHandler;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::get('advanceplan/countrecognitions/{scoutid}', [AdvancePlanController::class, 'getRecognationsComplete']);
+Route::get('emailvalidate/{email}', [AuthController::class, 'send']);
+Route::get('codevalidate/{code}', [AuthController::class, 'validateCode']);
 //Auth routes
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
@@ -47,6 +51,7 @@ Route::resource('advancePlan', AdvancePlanController::class)->except([
 Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 
 	Route::get('advanceplan/percent/{id}', [AdvancePlanController::class, 'percentAdvancePlan']);
+	Route::get('advanceplan/countrecognitions/{scoutid}', [AdvancePlanController::class, 'getRecognationsComplete']);
 
 
 
@@ -81,11 +86,13 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	Route::resource('period', PeriodController::class);
 	Route::get('nowperiod', [PeriodController::class, 'showPeriodNow']);
 
+	Route::get('directingprofile', [DirectingController::class, 'directingProfile']);
 
 	Route::resource('directing', DirectingController::class)->except([
 		'edit', 'create'
 	]);
 
+	// Route::get('unit/directing/table', [UnitController::class, 'showToDirecting']);
 	Route::get('unit/activate/{unitId}', [UnitController::class, 'activate']);
 	Route::get('unit/directing', [UnitController::class, 'indexByDirecting']);
 	Route::get('unit/scout/{scoutid}', [UnitController::class, 'showByScout']);
@@ -94,6 +101,9 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 		'edit', 'create'
 	]);
 	
+
+
+
 	Route::resource('scout', ScoutController::class)->except([
 		'edit', 'create'
 	]);
@@ -103,7 +113,7 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	// Route::get('scout/unit/{scout}', [ScoutController::class, 'showByUnit']);
 	Route::get('scout/validate/{scoutid}', [ScoutController::class, 'validateTeam']);
 	Route::get('scout/unit/{unitid}', [ScoutController::class, 'scoutsByUnit']);
-
+	Route::get('scoutsbydirectings', [ScoutController::class, 'scoutsByDirecting']);
 	
 	Route::resource('user', UserController::class)->except([
 		'edit', 'create'

@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Person;
 use App\Models\Scout;
 use App\Models\Directing;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ValidationAccount;
 
 class UserController extends Controller
 {
@@ -48,6 +50,8 @@ class UserController extends Controller
             'gender' => $request->gender,
             'nacionality' => $request->nacionality
         ]);
+        // $date = date('m-d-Y h:i:s a', time());  
+		// $hash = substr(hash('ripemd160', $request->email.$date), 0,5);
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -66,7 +70,9 @@ class UserController extends Controller
                 'person_id' => $person->id
             ]);
         }
+		
 
+        // Mail::to($request->email)->send(new ValidationAccount('Tu clave es: '. $hash));
         return response()->json([
             'success' => 1,
             'message' => 'Usuario creado con exito'

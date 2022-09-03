@@ -69,10 +69,13 @@ class AdvancePlanController extends Controller
     public function checkAdvancePlan(Request $request)
     {
         $scout = Scout::find($request->scout_id);
-        $val = $scout->topics()->detach($request->topic_id);
-        if ($val == 0) {
-            $scout->topics()->attach($request->topic_id);
+        foreach ($request->topics as $topic) {
+            $val = $scout->topics()->detach($topic);
+            if ($val == 0) {
+                $scout->topics()->attach($topic);
+            }
         }
+        
         $topics = Topic::topicsScout($request->scout_id);
 
         return response()->json([
@@ -98,8 +101,39 @@ class AdvancePlanController extends Controller
         foreach ($recognitions as $recog) {
             $contd = $recog->topics->count() + $contd;
         }
-        return $topict / $contd;
+        return number_format($topict / $contd, 1);
     }
+
+    public function getRecognationsComplete($scoutid){
+        $scout = Scout::where('id', $scoutid)->first();
+        $scoutTopic = $scout->topics;
+        $adv = AdvancePlan::where('type', $scout->type)->first();
+        $recog = $adv->recognitions;
+        $recogCumplidos = [];
+        foreach($recog as $r){
+            $acum = 0;
+            foreach($r->topics as $topic){
+                foreach($scoutTopic as $st){
+                    if($topic->id == $st->id){
+                        $acum++;
+                    }
+                }
+            }
+            if($acum == count($r->topics)){
+                array_push($recogCumplidos, $r);
+            }
+            $acum = 0;
+        }
+
+        return response()->json([
+            'recog' => $recogCumplidos,
+            'success' => 1
+        ]);
+        
+
+
+    }
+
     // public function checkAdvancePlan(Request $request){
     //     $scout = Scout::find($request->scout_id);
     //     Topic::attachScoutTeam($scout->id, $request->team_id, $request->topic_id);

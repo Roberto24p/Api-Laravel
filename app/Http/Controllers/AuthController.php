@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ValidationAccount;
 use Illuminate\Http\Request;
 use  App\Models\User;
 use  App\Models\Scout;
+use  App\Models\Validationmail;
 use  App\Models\Person;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -136,18 +139,18 @@ class AuthController extends Controller
 				'image' => '',
 				'nacionality' => 'Ecuador'
 			]);
-		User::create([
+		$user = User::create([
 			'name' => $request->name,
 			'email' => $request->email,
 			'password' => bcrypt($request->dni),
 			'person_id' => $idPerson
 		]);
-
 		$scoutId = DB::table('scouts')
 			->insertGetId([
 				'person_id' => $idPerson,
 				'type' => ''
 			]);
+		$user->roles()->attach(6);
 
 
 
@@ -155,5 +158,32 @@ class AuthController extends Controller
 			'scout' => $scoutId,
 			'success' => 1
 		]);
+	}
+
+	public function validateCode($code){
+		$validation = Validationmail::where('code', $code)->first();
+		$validation->update([
+			'state' => 'D'
+		]);
+		$validation->save();
+		return response()->json(
+			[
+				'success' => 1,
+				'val' => $validation
+			]
+		);
+
+	}
+
+	public function send($email){
+		$date = date('m-d-Y h:i:s a', time());  
+		$hash = substr(hash('ripemd160', $email.$date), 0,5);
+		Validationmail::create([
+			'code' => $hash,
+			'email' => $email,
+			'state' => 'A'
+		]);
+		Mail::to($email)->send(new ValidationAccount('Tu codigo de validacion es: '. $hash));
+		return true;
 	}
 }

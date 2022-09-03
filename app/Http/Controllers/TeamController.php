@@ -41,7 +41,7 @@ class TeamController extends Controller
     public function update(Request $request, $id){
         $team = Team::find($id);
         $team->update($request->all());
-
+        $team->save();
         return response()->json([
             'success' => 1,
             'team' => $team
