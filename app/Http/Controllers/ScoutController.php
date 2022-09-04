@@ -49,7 +49,10 @@ class ScoutController extends Controller
         $scouts = Scout::scoutsInscritosByGroup($unit->group_id);
         return response()->json([
             'success' => 1,
-            'scouts' => $scouts
+            'scouts' => $scouts,
+            'group' => $directing->unit->group->name,
+            'groupId' => $directing->unit->group->id
+
         ]);
     }
 
@@ -57,19 +60,21 @@ class ScoutController extends Controller
     {
         $user = Auth::user();
         $directing = Person::with('directing')->where('id', $user->person_id)->first()->directing;
-        // $scouts = [];
-        // // $teams = Team::where('unit_id', $directing->unit_id)->with('scouts')->get();
-        // // foreach($teams as $team){
-        // //     foreach($team->scouts as $scout){
-        // //         array_push($scouts, $scout);
-
-        // //     }
-        // // }
+        
         $scouts = Scout::scoutsByUnit($directing->unit_id);
         return response()->json([
             'success'=>1,
             'scouts'=> $scouts,
-            'group' => $directing->unit->group->name
+            'group' => $directing->unit->group->name,
+            'groupId' => $directing->unit->group->id
+        ]);
+    }
+
+    public function getUnitTeam($scoutId){
+        $scout = Scout::with('teams')->where('id', $scoutId)->first();
+        return response()->json([
+            'success'=> 1,
+            'unit' => $scout
         ]);
     }
 

@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Mail\ValidationAccount;
 use Illuminate\Http\Request;
 use  App\Models\User;
-use  App\Models\Scout;
+use  App\Models\Mode;
+use  App\Models\Range;
 use  App\Models\Validationmail;
 use  App\Models\Person;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -17,50 +19,65 @@ class AuthController extends Controller
 {
 	public function validateToken(Request $request)
 	{
-		$user = Auth::user();
-		$userData = User::find($user->id);
-		$profile = Person::find($user->person_id);
-		$role = $userData->roles()->first();
-		return response()->json([
-			'user' => [
-				'name' => $user->name,
-				'email' => $user->email,
-				'role' => $role->id,
-				'avatar' => $profile->image
-			],
-			'token' => $request->token
-		]);
+		try{
+			$user = Auth::user();
+			$userData = User::find($user->id);
+			$profile = Person::find($user->person_id);
+			$role = $userData->roles()->first();
+			return response()->json([
+				'user' => [
+					'name' => $user->name,
+					'email' => $user->email,
+					'role' => $role->id,
+					'avatar' => $profile->image
+				],
+				'token' => $request->token,
+				'success' => 1
+			]);
+		}catch(Exception $e){
+			return response()->json([
+				'success' => 2,
+				'message' => $e
+			]);
+		}
+		
 	}
 
 	public function login(Request $request)
 	{
-		$request->validate([
-			'email' => 'required|email',
-			'password' => 'required',
-		]);
+		try{
 
-		$credentials = $request->only(['email', 'password']);
+			$request->validate([
+				'email' => 'required|email',
+				'password' => 'required',
+			]);
+			$credentials = $request->only(['email', 'password']);
+			if (Auth::attempt($credentials)) {
+				$user = $request->user();
+				$userData = User::find($user->id);
+				$role = $userData->roles()->first();
+				// $user = Auth::user();
+				// $success['token'] = $user->createToken('get-groups')->accessToken;
+				$success['token'] = $user->createToken('MyApp', ['*'])->accessToken;
 
-		if (Auth::attempt($credentials)) {
-			$user = $request->user();
-			$userData = User::find($user->id);
-			$role = $userData->roles()->first();
-			// $user = Auth::user();
-			// $success['token'] = $user->createToken('get-groups')->accessToken;
-			$success['token'] = $user->createToken('MyApp', ['*'])->accessToken;
-
-			return response()->json(
-				[
-					'token' => $success,
-					'success' => 1, 
-					'user' => $user,
-					'role' => $role->id
-				],
-				200
-			);
-		} else {
-			return response()->json(['error' => 'Unauthorized'], 401);
+				return response()->json(
+					[
+						'token' => $success,
+						'success' => 1, 
+						'user' => $user,
+						'role' => $role->id
+					],
+					200
+				);
+			} else {
+				return response()->json(['error' => 'Unauthorized'], 401);
+			}
+		}catch(Exception $e){
+			return response()->json([
+				'error' => $e
+			]);
 		}
+
 	}
 
 	public function register(Request $request)
@@ -133,8 +150,8 @@ class AuthController extends Controller
 				'last_name' => $request->lastName,
 				'dni' => $request->dni,
 				'born_date' => $request->bornDate,
-				'type_blood' => $request->typeBlood,
-				'phone' => $request->phone,
+				'type_blood' => '',
+				'phone' => '',
 				'gender' => $request->gender,
 				'image' => '',
 				'nacionality' => 'Ecuador'
@@ -145,10 +162,12 @@ class AuthController extends Controller
 			'password' => bcrypt($request->dni),
 			'person_id' => $idPerson
 		]);
+		$age = getAge($request->bornDate);
+		$type = setRange($age, Range::all());
 		$scoutId = DB::table('scouts')
 			->insertGetId([
 				'person_id' => $idPerson,
-				'type' => ''
+				'type' => $type
 			]);
 		$user->roles()->attach(6);
 

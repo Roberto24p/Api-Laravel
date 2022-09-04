@@ -15,6 +15,7 @@ use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\RangeController;
 use Monolog\Handler\GroupHandler;
 
 /*
@@ -27,7 +28,7 @@ use Monolog\Handler\GroupHandler;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+Route::resource('range', RangeController::class);
 Route::get('advanceplan/countrecognitions/{scoutid}', [AdvancePlanController::class, 'getRecognationsComplete']);
 Route::get('emailvalidate/{email}', [AuthController::class, 'send']);
 Route::get('codevalidate/{code}', [AuthController::class, 'validateCode']);
@@ -60,7 +61,7 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 
 
 	Route::get('profile', [ProfileController::class, 'show']);
-
+	Route::post('profile', [ProfileController::class, 'store']);
 	Route::post('file', [FileController::class, 'store']);
 	Route::post('filePay', [FileController::class, 'storePay']);
 	Route::post('fileGroup', [FileController::class, 'storeGroup']);
@@ -114,6 +115,7 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	Route::get('scout/validate/{scoutid}', [ScoutController::class, 'validateTeam']);
 	Route::get('scout/unit/{unitid}', [ScoutController::class, 'scoutsByUnit']);
 	Route::get('scoutsbydirectings', [ScoutController::class, 'scoutsByDirecting']);
+	Route::get('scout/team/unit/{scoutId}', [ScoutController::class, 'getUnitTeam']);
 	
 	Route::resource('user', UserController::class)->except([
 		'edit', 'create'
@@ -126,6 +128,7 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	Route::get('teams/directing', [TeamController::class, 'teamByDirecting']);
 	Route::get('team/unit/{unitid}', [TeamController::class, 'getByUnit']);
 	Route::post('team/scout/', [TeamController::class, 'teamScout']);
+	Route::get('team/activate/{teamId}', [TeamController::class, 'activate']);
 });
 
 

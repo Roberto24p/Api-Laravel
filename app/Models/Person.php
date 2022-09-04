@@ -16,7 +16,6 @@ class Person extends Model
         'born_date',
         'phone',
         'gender',
-        'email',
         'image',
         'nacionality',
         'type_blood',

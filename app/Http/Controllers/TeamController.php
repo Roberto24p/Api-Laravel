@@ -10,7 +10,7 @@ class TeamController extends Controller
 {
  
     public function index(){
-        $teams = Team::with('unit')->where('state', 'A')->get();
+        $teams = Team::with('unit')->get();
         return response()->json([
             'response' => 1,
             'teams' => $teams
@@ -20,10 +20,12 @@ class TeamController extends Controller
     public function teamByDirecting(){
         $user = Auth::user();
         $directing = Person::with('directing')->where('id', $user->person_id)->first()->directing;
-        $teams = Team::with('unit')->where('unit_id', $directing->unit_id)->get();
+        $teams = Team::with('unit')->where('unit_id', $directing->unit_id)->where('state', 'A')->get();
+        $unit = $directing->unit;
         return response()->json([
             'response' => 1,
-            'teams' => $teams
+            'teams' => $teams,
+            'unit' => $unit,
         ]);
     }
 
@@ -74,6 +76,19 @@ class TeamController extends Controller
         $team = $team->scouts()->attach($request->scout_id);
         return response()->json([
             'success'=> 1,
+            'team' => $team
+        ]);
+    }
+
+    public function activate($team){
+        $team = Team::find($team);
+        $team->update([
+            'state' => 'A'
+        ]);
+        $team->save();
+
+        return response()->json([
+            'success' => 1,
             'team' => $team
         ]);
     }

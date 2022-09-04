@@ -35,4 +35,23 @@ class ProfileController extends Controller
                 'statusInscription' => $statusInscription
             ]);
     }
+
+    public function store(Request $request)
+    {
+        $validateCi = validarCI($request->dni);
+        if (!$validateCi) {
+            return response()->json([
+                'success' => 0,
+                'profile' => 'Ingresar un cédula valida'
+            ]);
+        }
+        $user = Auth::user();
+        $profile = Person::find($user->person_id);
+        $profile->update($request->all());
+        $profile->save();
+        return response()->json([
+            'success' => 1,
+            'profile' => $profile
+        ]);
+    }
 }
