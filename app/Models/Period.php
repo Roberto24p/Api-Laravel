@@ -13,7 +13,8 @@ class Period extends Model
     protected $fillable = [
         'date_start',
         'date_end',
-        'description'
+        'description',
+        'state'
     ];
 
     public static function periodNow(){

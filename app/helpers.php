@@ -18,7 +18,18 @@ function setRange($age, $ranges){
     }
     return $type;
 }
-
+function fechaLatinoShort($fecha){
+    $fecha = substr($fecha, 0, 10);
+    $numeroDia = date('d', strtotime($fecha));
+    $dia = date('l', strtotime($fecha));
+    $mes = date('F', strtotime($fecha));
+    $anio = date('Y', strtotime($fecha));
+  
+    $meses_ES = array("Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic");
+    $meses_EN = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+    $nombreMes = str_replace($meses_EN, $meses_ES, $mes);
+    return "$nombreMes $numeroDia, $anio";
+  }
 function validarCI($strCedula)
 {
     if (is_null($strCedula) || empty($strCedula)) { //compruebo si que el numero enviado es vacio o null

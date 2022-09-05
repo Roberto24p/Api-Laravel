@@ -38,4 +38,26 @@ class PeriodController extends Controller
             'success' => 1
         ]);
     }
+
+    public function activate($periodId){
+        $period = Period::all();
+        foreach($period as $p){
+            if($p->id == $periodId){
+                $p->update([
+                    'state' => 'Activo'
+                ]);
+                $p->save();
+            }else{
+                $p->update([
+                    'state' => 'Inactivo'
+                ]);
+                $p->save();
+            }
+        }
+
+        return response()->json([
+            'success' =>1,
+            'message' => 'Periodos actualizados'
+        ]);
+    }
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->foreign('person_id')->references('id')->on('persons')->onDelete('cascade');
+            $table->enum('state', ['A','D']);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -22,7 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'person_id'
+        'person_id',
+        'state'
     ];
 
     public function person(){

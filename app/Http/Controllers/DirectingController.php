@@ -35,7 +35,14 @@ class DirectingController extends Controller
 
     public function index()
     {
-        $directings = Directing::all();
+        $user = Auth::user();
+        $role = User::find($user->id)->roles()->first();
+        if($role->id == 1 || $role->id == 2){
+            $directings = Directing::getAllDirecting();
+        }else{
+            $directing =  User::with('person')->where('id', $user->id)->first();
+            $directings = Directing::directingsByGroup($directing->unit->group->id) ;
+        }
         return $directings;
     }
 
@@ -53,11 +60,28 @@ class DirectingController extends Controller
     }
 
     public function destroy($id){
-        $directing = Directing::find($id);
-        $directing->delete();
+        $user = User::find($id);
 
+        $user->update([
+            'state' => 'D'
+        ]);
+        $user->update();
+        $user->save();
         return response()->json([
-            'message' => 'Dirigente eliminado'
+            'message' => 'Dirigente eliminado',
+            'success' => 1
+        ]);
+    }
+
+    public function activate($id){
+        $user = User::find($id);
+        $user->update([
+            'state' => 'A'
+        ]);
+        $user->save();
+        return response()->json([
+            'message' => 'Dirigente Activado',
+            'success' => 1
         ]);
     }
 

@@ -28,6 +28,8 @@ use Monolog\Handler\GroupHandler;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('pdf/inscriptions/groups', [InscriptionController::class, 'pdfInscriptionsGroups']);
+
 Route::resource('range', RangeController::class);
 Route::get('advanceplan/countrecognitions/{scoutid}', [AdvancePlanController::class, 'getRecognationsComplete']);
 Route::get('emailvalidate/{email}', [AuthController::class, 'send']);
@@ -85,6 +87,7 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 
 
 	Route::resource('period', PeriodController::class);
+	Route::get('period/activate/{periodId}', [PeriodController::class, 'activate']);
 	Route::get('nowperiod', [PeriodController::class, 'showPeriodNow']);
 
 	Route::get('directingprofile', [DirectingController::class, 'directingProfile']);
@@ -92,6 +95,7 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	Route::resource('directing', DirectingController::class)->except([
 		'edit', 'create'
 	]);
+	Route::get('directing/activate/{directingId}', [DirectingController::class, 'activate']);
 
 	// Route::get('unit/directing/table', [UnitController::class, 'showToDirecting']);
 	Route::get('unit/activate/{unitId}', [UnitController::class, 'activate']);
@@ -129,6 +133,9 @@ Route::group(['middleware'=>['auth:api', 'scopes:get-groups']],function() {
 	Route::get('team/unit/{unitid}', [TeamController::class, 'getByUnit']);
 	Route::post('team/scout/', [TeamController::class, 'teamScout']);
 	Route::get('team/activate/{teamId}', [TeamController::class, 'activate']);
+
+
+
 });
 
 

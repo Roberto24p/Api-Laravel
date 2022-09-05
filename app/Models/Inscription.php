@@ -87,4 +87,12 @@ class Inscription extends Model
             ->where('p.state', 'Activo')->first();
         return $result;
     }
+
+    public static function cantidadInscritosxgrupos(){
+        $result = DB::table('inscription_scout')->join('groups','groups.id', '=', 'inscription_scout.group_id')
+        ->where('inscription_scout.state_inscription','confirmado')
+        ->orderBy('name')
+        ->get();
+        return $result;
+    }
 }
