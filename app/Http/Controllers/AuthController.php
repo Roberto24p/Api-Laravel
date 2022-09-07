@@ -14,12 +14,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
 	public function validateToken(Request $request)
 	{
-		try{
+		try {
 			$user = Auth::user();
 			$userData = User::find($user->id);
 			$profile = Person::find($user->person_id);
@@ -29,28 +30,34 @@ class AuthController extends Controller
 					'name' => $user->name,
 					'email' => $user->email,
 					'role' => $role->id,
+					'nameRole' => $role->nombre,
 					'avatar' => $profile->image
 				],
 				'token' => $request->token,
 				'success' => 1
 			]);
-		}catch(Exception $e){
+		} catch (Exception $e) {
 			return response()->json([
 				'success' => 2,
 				'message' => $e
 			]);
 		}
-		
 	}
 
 	public function login(Request $request)
 	{
-		try{
+		try {
+			$response = array('response' => '', 'success' => false);
 
-			$request->validate([
+			$validator = Validator::make($request->all(), [
 				'email' => 'required|email',
 				'password' => 'required',
+			], $messages = [
+				'required' => 'Verifique sus datos',
 			]);
+			if ($validator->fails()) {
+				$response['response'] = $validator->messages();
+			}
 			$credentials = $request->only(['email', 'password']);
 			if (Auth::attempt($credentials)) {
 				$user = $request->user();
@@ -63,21 +70,27 @@ class AuthController extends Controller
 				return response()->json(
 					[
 						'token' => $success,
-						'success' => 1, 
+						'success' => 1,
 						'user' => $user,
-						'role' => $role->id
+						'role' => $role->id,
+						'nameRole' => $role->nombre
 					],
 					200
 				);
 			} else {
-				return response()->json(['error' => 'Unauthorized'], 401);
+				return response()->json(
+					[
+						'error' => 'Verifique sus credenciales',
+						'success' => 0
+					],
+					200
+				);
 			}
-		}catch(Exception $e){
+		} catch (Exception $e) {
 			return response()->json([
 				'error' => $e
 			]);
 		}
-
 	}
 
 	public function register(Request $request)
@@ -179,8 +192,9 @@ class AuthController extends Controller
 		]);
 	}
 
-	public function validateCode($code){
-		$validation = Validationmail::where('code', $code)->first();
+	public function validateCode($code)
+	{
+		$validation = Validationmail::where('code', $code)->where('state', 'A')->first();
 		$validation->update([
 			'state' => 'D'
 		]);
@@ -191,18 +205,19 @@ class AuthController extends Controller
 				'val' => $validation
 			]
 		);
-
 	}
 
-	public function send($email){
-		$date = date('m-d-Y h:i:s a', time());  
-		$hash = substr(hash('ripemd160', $email.$date), 0,5);
+	public function send($email)
+	{
+		$date = date('m-d-Y h:i:s a', time());
+		$hash = substr(hash('ripemd160', $email . $date), 0, 5);
 		Validationmail::create([
 			'code' => $hash,
 			'email' => $email,
 			'state' => 'A'
 		]);
-		Mail::to($email)->send(new ValidationAccount('Tu codigo de validacion es: '. $hash));
+		Mail::to($email)->send(new ValidationAccount('Tu codigo de validacion es: ' . $hash));
 		return true;
 	}
+
 }

@@ -16,6 +16,8 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\RangeController;
+use App\Http\Controllers\RecoverPasswordController;
+use App\Http\Controllers\ReportController;
 use Monolog\Handler\GroupHandler;
 
 /*
@@ -28,12 +30,27 @@ use Monolog\Handler\GroupHandler;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get('pdf/inscriptions/groups', [InscriptionController::class, 'pdfInscriptionsGroups']);
-
+//Reportes
+Route::get('pdf/inscriptions/groups/{periodId}', [InscriptionController::class, 'pdfInscriptionsGroups']);
+Route::get('pdf/advancePlan/scout/{scoutId}', [ReportController::class, 'advancePlanComplete']);
+Route::get('pdf/inscriptions/unit/{groupId}', [ReportController::class, 'scoutsInscriptionsUnit']);
+//Rangos
 Route::resource('range', RangeController::class);
+
+
 Route::get('advanceplan/countrecognitions/{scoutid}', [AdvancePlanController::class, 'getRecognationsComplete']);
+
+//Validar Correo Electronico
 Route::get('emailvalidate/{email}', [AuthController::class, 'send']);
 Route::get('codevalidate/{code}', [AuthController::class, 'validateCode']);
+
+
+//Recuperar password
+Route::get('recover/password/validateemail/{email}', [RecoverPasswordController::class, 'validateEmail']);
+Route::get('recover/password/validateCode/{code}', [RecoverPasswordController::class, 'validateCode']);
+Route::post('recover/password/recover', [RecoverPasswordController::class, 'recoverPassword']);
+
+
 //Auth routes
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);

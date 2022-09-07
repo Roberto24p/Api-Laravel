@@ -85,9 +85,9 @@ class InscriptionController extends Controller
         ]);
     }
 
-    public function pdfInscriptionsGroups()
+    public function pdfInscriptionsGroups($periodId)
     {
-        $inscriptions = Inscription::cantidadInscritosxgrupos();
+        $inscriptions = Inscription::cantidadInscritosxgrupos($periodId);
         $acum = 0;
         $teamGroup = '';
         $list = [];

@@ -10,26 +10,44 @@ function getAge($bornDate)
     return $dif->format('%y');
 }
 
-function setRange($age, $ranges){
+function setRange($age, $ranges)
+{
     $type = '';
-    foreach($ranges as $range){
-        if($age <= $range->max && $age >= $range->min )
+    foreach ($ranges as $range) {
+        if ($age <= $range->max && $age >= $range->min)
             $type = $range->name;
     }
     return $type;
 }
-function fechaLatinoShort($fecha){
+function fechaLatinoShort($fecha)
+{
     $fecha = substr($fecha, 0, 10);
     $numeroDia = date('d', strtotime($fecha));
     $dia = date('l', strtotime($fecha));
     $mes = date('F', strtotime($fecha));
     $anio = date('Y', strtotime($fecha));
-  
+
     $meses_ES = array("Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic");
     $meses_EN = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
     $nombreMes = str_replace($meses_EN, $meses_ES, $mes);
     return "$nombreMes $numeroDia, $anio";
-  }
+}
+
+function fechaLatino($fecha)
+{
+    $fecha = substr($fecha, 0, 10);
+    $numeroDia = date('d', strtotime($fecha));
+    $dia = date('l', strtotime($fecha));
+    $mes = date('F', strtotime($fecha));
+    $anio = date('Y', strtotime($fecha));
+    $dias_ES = array("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo");
+    $dias_EN = array("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+    $nombredia = str_replace($dias_EN, $dias_ES, $dia);
+    $meses_ES = array("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre");
+    $meses_EN = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+    $nombreMes = str_replace($meses_EN, $meses_ES, $mes);
+    return $nombredia . " " . $numeroDia . " de " . $nombreMes . " de " . $anio;
+}
 function validarCI($strCedula)
 {
     if (is_null($strCedula) || empty($strCedula)) { //compruebo si que el numero enviado es vacio o null
@@ -104,4 +122,3 @@ function validarCI($strCedula)
         }
     }
 }
-

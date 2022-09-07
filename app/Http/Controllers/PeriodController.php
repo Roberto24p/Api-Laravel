@@ -19,6 +19,7 @@ class PeriodController extends Controller
 
         return response()->json([
             'data' => $response,
+            'success' => 1
         ]);
     }
 
