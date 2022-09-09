@@ -18,6 +18,10 @@ class Topic extends Model
     {
         return $this->belongsToMany(Scout::class);
     }
+    public function recognition()
+    {
+        return $this->belongsTo(Recognition::class);
+    }
 
     public static function topicsScout($scoutId)
     {

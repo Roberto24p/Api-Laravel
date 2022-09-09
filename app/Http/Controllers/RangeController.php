@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Range;
+use App\Models\AdvancePlan;
 use Illuminate\Support\Facades\Auth;
 
 class RangeController extends Controller
@@ -24,7 +25,11 @@ class RangeController extends Controller
             'max' => $request->max,
             'min' => $request->min
         ]);
-
+        $advancePlan = AdvancePlan::create([
+            'tittle' => 'Plan de adelanto de '. $request->name,
+            'Description' => '',
+            'type' => $request->name
+        ]);
         return response()->json([
             'success' => 1,
             'range' => $range

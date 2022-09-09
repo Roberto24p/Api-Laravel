@@ -85,40 +85,5 @@ class InscriptionController extends Controller
         ]);
     }
 
-    public function pdfInscriptionsGroups($periodId)
-    {
-        $inscriptions = Inscription::cantidadInscritosxgrupos($periodId);
-        $acum = 0;
-        $teamGroup = '';
-        $list = [];
-        foreach ($inscriptions as $clave => $i) {
-            $obj =  new \stdClass();
-            if ($clave == 0) {
-                $acum = $acum + 1;
-                $teamGroup = $i->name;
-            } else {
-                if (count($inscriptions) == $clave + 1) {
-                    $obj->image = $i->image;
-                    $obj->name = $teamGroup;
-                    $obj->size = $acum + 1;
-                    array_push($list, $obj);
-                } else {
-                    if ($teamGroup != $i->name) {
-                        $obj->name = $teamGroup;
-                        $obj->size = $acum;
-                        $obj->image = $i->image;
-
-                        $acum = 1;
-                        array_push($list, $obj);
-                        $teamGroup = $i->name;
-                    } else {
-                        $acum = $acum + 1;
-                    }
-                }
-            }
-        }
-        $dateNow = date('l jS \of F Y ', time());
-        $pdf = Pdf::LoadView('reports.scoutsGroup', ['groups' => $list, 'date' => $dateNow]);
-        return $pdf->stream();
-    }
+ 
 }

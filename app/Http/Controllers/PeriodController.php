@@ -15,7 +15,7 @@ class PeriodController extends Controller
 
     public function index()
     {
-        $response = Period::all();
+        $response = Period::orderBy('state', 'asc')->get();
 
         return response()->json([
             'data' => $response,

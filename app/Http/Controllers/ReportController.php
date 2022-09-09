@@ -10,6 +10,8 @@ use App\Models\Scout;
 use App\Models\Inscription;
 use App\Models\Range;
 use App\Models\Group;
+use App\Models\Period;
+use App\Models\Person;
 use App\Models\Recognition;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -45,13 +47,18 @@ class ReportController extends Controller
         ]);
         return $pdf->stream();
     }
-    public function advancePlanComplete($scoutId)
+    public function advancePlanComplete()
     {
-        $scout = Scout::find($scoutId);
+        $user = Auth::user();
+        $person = Person::where('id', $user->person_id)->first();
+        $scout = Scout::find($person->scout->id);
         $topicsComplete = $scout->topics()->get();
-        // $recognition = Recognition::find($topicsComplete[0]->recognition_id);
-        // $advancePlan = AdvancePlan::find($recognition->advance_plan_id);
-        $advancePlan = AdvancePlan::where('type', $scout->type)->first();
+        if (count($scout->topics) == 0) {
+            $advancePlan = AdvancePlan::where('type', $scout->type)->where('state', 'A')->first();
+        }else{
+            $topic = $scout->topics->first();
+            $advancePlan = AdvancePlan::where('id', $topic->recognition->advance_plan_id)->first();
+        }
         $report = [];
         $obj =  new \stdClass();
 
@@ -79,6 +86,66 @@ class ReportController extends Controller
 
         $pdf = Pdf::LoadView('reports.advancePlanScout', ['advancePlan' => $report, 'date' => fechaLatino($dateNow), 'scout' => $scout->person]);
 
+        return $pdf->stream();
+    }
+
+    public function pdfInscriptionsGroups($periodId)
+    {
+        $inscriptions = Inscription::cantidadInscritosxgrupos($periodId);
+        $periodInfo = Period::find($periodId);
+        $groups = Group::all();
+        $acum = 0;
+        $teamGroup = '';
+        $list = [];
+        foreach ($inscriptions as $clave => $i) {
+            $obj =  new \stdClass();
+            if ($clave == 0) {
+                $acum = $acum + 1;
+                $teamGroup = $i->name;
+            } else {
+                if (count($inscriptions) == intval($clave) + 1) {
+                    $obj->id = $i->id;
+                    $obj->name = $teamGroup;
+                    $obj->size = $acum + 1;
+                    array_push($list, $obj);
+                } else {
+                    if ($teamGroup != $i->name) {
+                        $obj->id = $i->id;
+                        $obj->name = $teamGroup;
+                        $obj->size = $acum;
+                        $acum = 1;
+                        array_push($list, $obj);
+                        $teamGroup = $i->name;
+                    } else {
+                        $acum = $acum + 1;
+                    }
+                }
+            }
+        }
+        $aux = false;
+        foreach($groups as $g){
+            foreach($list as $l){
+                if($l->id == $g->id){
+                   $aux = true;
+                }
+            }
+            if($aux == false){
+                $obj =  new \stdClass();
+                $obj->name = $g->name;
+                $obj->size = 0;
+                $obj->id = $g->id;
+                array_push($list, $obj);
+            }
+            $aux = false;
+
+        }
+
+        $dateNow = date('l jS \of F Y ', time());
+        $pdf = Pdf::LoadView('reports.scoutsGroup', [
+            'groups' => $list, 
+            'date' => fechaLatino($dateNow),
+            'period' => $periodInfo
+        ]);
         return $pdf->stream();
     }
 }

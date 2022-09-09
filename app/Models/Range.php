@@ -13,7 +13,6 @@ class Range extends Model
         'name',
         'min',
         'max'
-
     ];
 
   
