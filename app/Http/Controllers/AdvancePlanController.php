@@ -5,14 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\AdvancePlan;
 use App\Models\Topic;
 use App\Models\Scout;
+use App\Models\User;
 use App\Models\Recognition;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdvancePlanController extends Controller
 {
     public function index()
     {
         return AdvancePlan::all();
+    }
+
+    public function store(Request $request)
+    {
+        $advancePlan = AdvancePlan::create([
+            'tittle' => $request->tittle,
+            'Description' => $request->description,
+            'type' => $request->type
+        ]);
+        return response()->json([
+            'success' => 1,
+            'message' => 'Creado con exito',
+            'advancePlan' => $advancePlan
+        ]);
     }
 
     public function recognitionsWithItems($id)
@@ -148,7 +164,20 @@ class AdvancePlanController extends Controller
         $scout = Scout::find($scout);
         if (count($scout->topics) == 0) {
             $advancePlan = AdvancePlan::where('type', $scout->type)->where('state', 'A')->orderBy('created_at', 'DESC')->with('recognitions')->get();
-        }else{
+        } else {
+            $topic = $scout->topics->first();
+            $advancePlan = AdvancePlan::where('id', $topic->recognition->advance_plan_id)->with('recognitions')->get();
+        }
+        return $advancePlan;
+    }
+    public function recognitionsWithItemsByScoutProfile() //No olvidar validar
+    {
+        $scoutId = User::with('person')->where('person_id', Auth::user()->person_id)->first()->person->scout->id;
+
+        $scout = Scout::find($scoutId);
+        if (count($scout->topics) == 0) {
+            $advancePlan = AdvancePlan::where('type', $scout->type)->where('state', 'A')->orderBy('created_at', 'DESC')->with('recognitions')->get();
+        } else {
             $topic = $scout->topics->first();
             $advancePlan = AdvancePlan::where('id', $topic->recognition->advance_plan_id)->with('recognitions')->get();
         }
@@ -168,9 +197,53 @@ class AdvancePlanController extends Controller
         return number_format($topict / $contd, 1);
     }
 
+    public function percentAdvancePlanByScoyt()
+    {
+        $contd = 0;
+        // $user = User::find(Auth::user()->person_id);
+        $id = User::with('person')->where('person_id', Auth::user()->person_id)->first()->person->scout->id;
+        $scout = Scout::find($id);
+        $topict = count(AdvancePlan::tScout($id));
+        $planAvance = AdvancePlan::where('type', $scout->type)->with('recognitions')->first();
+        $recognitions = $planAvance->recognitions;
+        foreach ($recognitions as $recog) {
+            $contd = $recog->topics->count() + $contd;
+        }
+        return number_format($topict / $contd, 1);
+    }
+
     public function getRecognationsComplete($scoutid)
     {
         $scout = Scout::where('id', $scoutid)->first();
+        $scoutTopic = $scout->topics;
+        $adv = AdvancePlan::where('type', $scout->type)->first();
+        $recog = $adv->recognitions;
+        $recogCumplidos = [];
+        foreach ($recog as $r) {
+            $acum = 0;
+            foreach ($r->topics as $topic) {
+                foreach ($scoutTopic as $st) {
+                    if ($topic->id == $st->id) {
+                        $acum++;
+                    }
+                }
+            }
+            if ($acum == count($r->topics)) {
+                array_push($recogCumplidos, $r);
+            }
+            $acum = 0;
+        }
+
+        return response()->json([
+            'recog' => $recogCumplidos,
+            'success' => 1
+        ]);
+    }
+
+    public function getRecognitionsCompleteScout()
+    {
+        $scoutId = User::with('person')->where('person_id', Auth::user()->person_id)->first()->person->scout->id;
+        $scout = Scout::find($scoutId);
         $scoutTopic = $scout->topics;
         $adv = AdvancePlan::where('type', $scout->type)->first();
         $recog = $adv->recognitions;
@@ -221,14 +294,5 @@ class AdvancePlanController extends Controller
             'message' => 'Habilitado correctamente'
         ]);
     }
-    // public function checkAdvancePlan(Request $request){
-    //     $scout = Scout::find($request->scout_id);
-    //     Topic::attachScoutTeam($scout->id, $request->team_id, $request->topic_id);
-    //     // $scout->topics()->attach($request->topic_id);
-    //     $topics = Topic::topicsScout($request->scout_id);
-    //     return response()->json([
-    //         'topics' => $topics,
-    //         'message' => 'Registrado el Tema'
-    //     ]);
-    // }
+
 }

@@ -48,7 +48,8 @@ class UserController extends Controller
             'born_date' => $request->date_born,
             'phone' => $request->phone,
             'gender' => $request->gender,
-            'nacionality' => $request->nacionality
+            'nacionality' => $request->nacionality,
+            'image' => ''
         ]);
         // $date = date('m-d-Y h:i:s a', time());  
 		// $hash = substr(hash('ripemd160', $request->email.$date), 0,5);

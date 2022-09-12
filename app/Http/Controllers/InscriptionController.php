@@ -68,9 +68,9 @@ class InscriptionController extends Controller
         );
     }
 
-    public function getAllInscriptions()
+    public function getAllInscriptions($periodId)
     {
-        $inscriptions = Inscription::allInscriptions();
+        $inscriptions = Inscription::allInscriptions($periodId);
         return response()->json([
             'data' => $inscriptions,
             'succcess' => 1

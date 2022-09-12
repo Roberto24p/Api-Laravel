@@ -13,7 +13,8 @@ class AdvancePlan extends Model
     protected $fillable = [
         'tittle',
         'Description',
-        'state'
+        'state',
+        'type'
     ];
 
     public function recognitions()

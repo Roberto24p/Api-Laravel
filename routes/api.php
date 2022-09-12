@@ -18,6 +18,7 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\RangeController;
 use App\Http\Controllers\RecoverPasswordController;
 use App\Http\Controllers\ReportController;
+use App\Models\AdvancePlan;
 use Monolog\Handler\GroupHandler;
 
 /*
@@ -90,7 +91,7 @@ Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
 	Route::post('inscription/register', [InscriptionController::class, 'inscription']);
 	Route::get('inscription/group', [InscriptionController::class, 'getScoutInscription']);
 	Route::get('inscription/scout', [ProfileController::class, 'infoInscription']);
-	Route::get('inscription', [InscriptionController::class, 'getAllInscriptions']);
+	Route::get('inscription/{periodId}', [InscriptionController::class, 'getAllInscriptions']);
 	Route::post('updateInscription', [InscriptionController::class, 'putScoutInscription']);
 	Route::post('checkadvanceplan', [AdvancePlanController::class, 'checkAdvancePlan']);
 
@@ -136,7 +137,6 @@ Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
 	Route::get('scout/unit/{unitid}', [ScoutController::class, 'scoutsByUnit']);
 	Route::get('scoutsbydirectings', [ScoutController::class, 'scoutsByDirecting']);
 	Route::get('scout/team/unit/{scoutId}', [ScoutController::class, 'getUnitTeam']);
-
 	Route::resource('user', UserController::class)->except([
 		'edit', 'create'
 	]);
@@ -153,5 +153,11 @@ Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
 	//Reportes
 	Route::get('pdf/inscriptions/groups/{periodId}', [ReportController::class, 'pdfInscriptionsGroups']);
 	Route::get('pdf/advancePlan/scout/', [ReportController::class, 'advancePlanComplete']);
-	Route::get('pdf/inscriptions/unit/{groupId}', [ReportController::class, 'scoutsInscriptionsUnit']);
+	Route::get('pdf/inscriptions/unit', [ReportController::class, 'scoutsInscriptionsUnit']);
+	Route::get('graphicreport/inscription/groups/', [ReportController::class, 'graphicInscriptionsGroups']);
+	Route::get('graphicreport/inscriptions/unit/', [ReportController::class, 'graphicScoutsInscriptionsUnit']);
 });
+Route::get('pdf/directings/registers', [ReportController::class, 'directingsByGroup']);
+Route::get('graphicreport/directings/registers', [ReportController::class, 'graphicDirectingsByGroup']);
+
+Route::get('excel/inscriptions', [ReportController::class, 'AllInscriptionsByPeriod']);

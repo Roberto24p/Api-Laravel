@@ -55,4 +55,17 @@ class Directing extends Model
             ->get();
         return $result;
     }
+
+    public static function getDirectingsActive(){
+        $result = DB::table('directings as d')
+            ->join('units as u', 'u.id', '=', 'd.unit_id')
+            ->join('groups as g', 'g.id', '=', 'u.group_id')
+            ->join('persons as p', 'p.id', '=', 'd.person_id')
+            ->join('users as us', 'us.person_id', '=', 'p.id')
+            ->where('us.state', 'A')
+            ->select('p.name', 'p.last_name', 'g.name as group_name', 'p.born_date', 'p.dni', 'us.id', 'us.state', 'g.id as group_id')
+            ->get();
+        return $result;
+
+    }
 }

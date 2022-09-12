@@ -56,12 +56,14 @@ class Inscription extends Model
         }
     }
 
-    public static function allInscriptions()
+    public static function allInscriptions($periodId)
     {
         $inscriptions = DB::table('inscription_scout')
             ->join('scouts', 'scouts.id', '=', 'inscription_scout.scout_id')
             ->join('persons', 'persons.id', '=', 'scouts.person_id')
             ->join('groups', 'groups.id', '=', 'inscription_scout.group_id')
+            ->where('inscription_scout.period_id', $periodId)
+            ->orderBy('inscription_scout.state_inscription', 'ASC')
             ->select('inscription_scout.image_photo', 'inscription_scout.image_permission', 'inscription_scout.image_pay', 'groups.name as group', 'inscription_scout.state_inscription as state_inscription', 'persons.name as name', 'scouts.type as type', 'inscription_scout.id', 'persons.last_name', 'persons.dni', 'persons.type_blood', 'persons.phone', 'persons.gender', 'persons.born_date')->get();
         return $inscriptions;
     }
@@ -93,8 +95,10 @@ class Inscription extends Model
     {
         $result = DB::table('inscription_scout')
             ->join('groups', 'groups.id', '=', 'inscription_scout.group_id')
+            ->join('periods as p', 'p.id', '=', 'inscription_scout.period_id')
             ->where('inscription_scout.state_inscription', 'confirmado')
             ->where('inscription_scout.period_id', $perioId)
+            ->where('p.state', 'Activo')
             ->orderBy('name')
             ->get();
         return $result;
