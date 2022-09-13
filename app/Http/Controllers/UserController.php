@@ -9,6 +9,9 @@ use App\Models\Scout;
 use App\Models\Directing;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ValidationAccount;
+use Illuminate\Support\Facades\DB;
+
+use Exception;
 
 class UserController extends Controller
 {
@@ -19,7 +22,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::with(['person', 'roles'])->get();
+        return User::with(['person', 'roles'])->where('state', 'A')->get();
     }
 
 
@@ -41,43 +44,55 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $person = Person::create([
-            'name' => $request->name,
-            'last_name' => $request->last_name,
-            'dni' => $request->dni,
-            'born_date' => $request->date_born,
-            'phone' => $request->phone,
-            'gender' => $request->gender,
-            'nacionality' => $request->nacionality,
-            'image' => ''
-        ]);
-        // $date = date('m-d-Y h:i:s a', time());  
-		// $hash = substr(hash('ripemd160', $request->email.$date), 0,5);
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->dni),
-            'person_id' => $person->id
-        ]);
-        $user->roles()->attach($request->role);
-        if ($request->role == 6) {
-            Scout::create([
-                'person_id' => $person->id,
-                'type' => 'tropa'
+        DB::beginTransaction();
+
+        try {
+
+            $person = Person::create([
+                'name' => $request->name,
+                'last_name' => $request->last_name,
+                'dni' => $request->dni,
+                'born_date' => $request->date_born,
+                'phone' => $request->phone,
+                'gender' => $request->gender,
+                'nacionality' => $request->nacionality,
+                'image' => ''
             ]);
-        }else if($request->role == 4 || $request->role == 5){
-            Directing::create([
-                'unit_id' => $request->unit_id,
+            $date = date('m-d-Y h:i:s a', time());
+            $hash = substr(hash('ripemd160', $request->email . $date), 0, 5);
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($hash),
                 'person_id' => $person->id
             ]);
-        }
-		
+            $user->roles()->attach($request->role);
+            if ($request->role == 6) {
+                Scout::create([
+                    'person_id' => $person->id,
+                    'type' => 'tropa'
+                ]);
+            } else if ($request->role == 4 || $request->role == 5) {
+                Directing::create([
+                    'unit_id' => $request->unit_id,
+                    'person_id' => $person->id
+                ]);
+            }
 
-        // Mail::to($request->email)->send(new ValidationAccount('Tu clave es: '. $hash));
-        return response()->json([
-            'success' => 1,
-            'message' => 'Usuario creado con exito'
-        ]);
+
+            Mail::to($request->email)->send(new ValidationAccount('Tu clave para autenticarte es: ' . $hash));
+            DB::commit();
+            return response()->json([
+                'success' => 1,
+                'message' => 'Usuario creado con exito'
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => 0,
+                'message' => 'Error creando usuario'
+            ]);
+        }
     }
 
     /**
@@ -130,7 +145,7 @@ class UserController extends Controller
         ]);
         $person->save();
         $user->roles()->attach($request->role);
-        
+
         return response()->json([
             'success' => 1,
             'message' => 'Actualizado con exito'
@@ -146,5 +161,19 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function delete($userId)
+    {
+        $user = User::find($userId);
+        $user->update([
+            'state' => 'D'
+        ]);
+        $user->save();
+
+        return response()->json([
+            'success' => 1,
+            'message' => 'Eliminado con exito'
+        ]);
     }
 }

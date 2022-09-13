@@ -7,6 +7,7 @@ use App\Models\User;
 use  App\Models\RecoverPassword;
 use  App\Models\Validationmail;
 use App\Mail\ValidationAccount;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,10 +16,10 @@ class RecoverPasswordController extends Controller
     public function validateEmail($email)
     {
         $user = User::where('email', $email)->first();
-        if($user == null){
+        if ($user == null) {
             return response()->json([
-                'success'=> 0,
-                'message'=> 'Correo no registrado'
+                'success' => 0,
+                'message' => 'Correo no registrado'
             ]);
         }
         $date = date('m-d-Y h:i:s a', time());
@@ -37,11 +38,11 @@ class RecoverPasswordController extends Controller
     public function validateCode($code)
     {
         $validate = RecoverPassword::where('token', $code)->where('state', 'A')->first();
-        if($validate != null){
+        if ($validate != null) {
             return response()->json([
                 'success' => 1
             ]);
-        }else{
+        } else {
             return response()->json([
                 'success' => 0
             ]);
@@ -51,10 +52,10 @@ class RecoverPasswordController extends Controller
     public function recoverPassword(Request $request)
     {
         $validateCode = RecoverPassword::where('token', $request->code)->where('state', 'A')->first();
-        if($validateCode!=null){
+        if ($validateCode != null) {
             $user = User::where('email', $validateCode->email)->first();
             $user->update([
-                'password'=> Hash::make($request->password)
+                'password' => Hash::make($request->password)
             ]);
             $user->save();
             $validateCode->update([
@@ -65,10 +66,31 @@ class RecoverPasswordController extends Controller
                 'success' => 1,
                 'message' => 'Contraseña actualizada'
             ]);
-        }else{
+        } else {
             return response()->json([
                 'success' => 0,
                 'message' => 'Problema validando, intentelo de nuevo'
+            ]);
+        }
+    }
+
+    public function changePassword(Request $request)
+    {
+        $user = Auth::user();
+        $user = User::find($user->id);
+        if ($user != null) {
+            $user->update([
+                'password' => bcrypt($request->newPassword)
+            ]);
+            $user->save();
+            return response()->json([
+                'success' => 1,
+                'message' => 'Contraseña actualizada con éxito'
+            ]);
+        } else {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Error actualizando la contraseña'
             ]);
         }
     }

@@ -33,7 +33,8 @@ class PeriodController extends Controller
     }
 
     public function showPeriodNow(){
-        $period = Period::periodNow();
+        $period = Period::where('state', 'Activo')->first();
+        // $period = Period::periodNow();
         return response()->json([
             'response' => $period,
             'success' => 1

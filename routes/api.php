@@ -19,6 +19,7 @@ use App\Http\Controllers\RangeController;
 use App\Http\Controllers\RecoverPasswordController;
 use App\Http\Controllers\ReportController;
 use App\Models\AdvancePlan;
+use App\Models\RecoverPassword;
 use Monolog\Handler\GroupHandler;
 
 /*
@@ -67,6 +68,12 @@ Route::resource('advancePlan', AdvancePlanController::class)->except([
 
 // Route for admin permissions
 Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
+
+
+
+	Route::post('changepassword', [RecoverPasswordController::class, 'changePassword']);
+
+
 
 	Route::get('advanceplan/percent/{id}', [AdvancePlanController::class, 'percentAdvancePlan']);
 	Route::get('advanceplan/countrecognitions/{scoutid}', [AdvancePlanController::class, 'getRecognationsComplete']);
@@ -156,6 +163,10 @@ Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
 	Route::get('pdf/inscriptions/unit', [ReportController::class, 'scoutsInscriptionsUnit']);
 	Route::get('graphicreport/inscription/groups/', [ReportController::class, 'graphicInscriptionsGroups']);
 	Route::get('graphicreport/inscriptions/unit/', [ReportController::class, 'graphicScoutsInscriptionsUnit']);
+
+
+
+	Route::get('user/delete/{userId}', [UserController::class, 'delete']);
 });
 Route::get('pdf/directings/registers', [ReportController::class, 'directingsByGroup']);
 Route::get('graphicreport/directings/registers', [ReportController::class, 'graphicDirectingsByGroup']);
