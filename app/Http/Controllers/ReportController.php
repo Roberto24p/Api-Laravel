@@ -21,6 +21,19 @@ use stdClass;
 
 class ReportController extends Controller
 {
+
+    public function directingDetails()
+    {
+        $groups = Group::with('units')->get();
+        $dateNow = date('l jS \of F Y ', time());
+
+        $pdf = Pdf::LoadView('reports.directingsDetails', [
+            'groups' => $groups,
+            'date' => fechaLatino($dateNow)
+        ]);
+        // return $pdf->download('Detalles_directing.pdf');
+        return $pdf->stream();
+    }
     public function directingsByGroup()
     {
         $directings = Directing::getDirectingsActive();
@@ -66,7 +79,7 @@ class ReportController extends Controller
             $groupObj->size = $count;
             array_push($reporte, $groupObj);
         }
-        
+
         return response()->json([
             'groups' => $reporte
         ]);

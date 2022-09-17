@@ -165,10 +165,13 @@ Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
 	Route::get('graphicreport/inscriptions/unit/', [ReportController::class, 'graphicScoutsInscriptionsUnit']);
 
 
-
 	Route::get('user/delete/{userId}', [UserController::class, 'delete']);
 });
 Route::get('pdf/directings/registers', [ReportController::class, 'directingsByGroup']);
+Route::get('pdf/directingdetail', [ReportController::class, 'directingDetails']);
+
+
+
 Route::get('graphicreport/directings/registers', [ReportController::class, 'graphicDirectingsByGroup']);
 
 Route::get('excel/inscriptions', [ReportController::class, 'AllInscriptionsByPeriod']);

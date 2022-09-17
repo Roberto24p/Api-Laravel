@@ -23,5 +23,9 @@ class Group extends Model
         return $this->hasMany(Scout::class);
     }
 
+    public function units(){
+        return $this->hasMany(Unit::class);
+    }
+
      
 }

@@ -56,12 +56,16 @@
     <div style="position: relative; top:5px"><b>Reporte:</b> Plan de Adelanto</div>
     <div style="position: relative; top:5px"><b>Nombres: </b> {{ $scout->name }} {{ $scout->last_name }}</div>
     <div style="position: relative; top:5px"><b>Cédula: </b> {{ $scout->dni }} </div>
-    <div style="position: relative; top:5px; text-transform: capitalize"><b>Unidad: </b> {{ $scout->scout->type }} </div>
+    <div style="position: relative; top:5px; text-transform: capitalize"><b>Unidad: </b> {{ $scout->scout->type }}
+    </div>
 
     <div style="position: relative; top:5px"><b>Fecha: </b>{{ $date }}</div>
 
     <div style="position:relative; top: 20px;" class="row">
         @foreach ($advancePlan as $adv)
+            @php
+                $aux = false;
+            @endphp
             <h4>Reconocimiento: {{ $adv->name_recognition }}</h4>
             <table style="position: relative; ">
                 <thead>
@@ -73,6 +77,11 @@
                 </thead>
                 <tbody>
                     @foreach ($adv->topics as $topic)
+                        @php
+                            if ($topic->status) {
+                                $aux = true;
+                            }
+                        @endphp
                         <tr>
 
                             <td>
@@ -83,10 +92,13 @@
                                     <p class="state">
                                         Completado
                                     </p>
+                                @elseif($aux == true)
+                                    <p class="state" style="background-color: rgb(246, 210, 109)">
+                                        En proceso
+                                    </p>
                                 @else
-                                    <p
-                                        class="state" style="background-color: rgb(225, 121, 121)">
-                                        No Completado
+                                    <p class="state" style="background-color: rgb(143, 125, 246)">
+                                        No iniciado
                                     </p>
                                 @endif
                             </td>
