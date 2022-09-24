@@ -25,7 +25,11 @@ class Topic extends Model
 
     public static function topicsScout($scoutId)
     {
-        $data = DB::table('scout_topic')->where('scout_id', $scoutId)->get();
+        $data = DB::table('scout_topic as st')
+            ->join('topics as t', 't.id', '=', 'st.topic_id')
+            ->where('scout_id', $scoutId)
+            ->select('st.id as id', 'st.scout_id', 'st.topic_id', 't.recognition_id')
+            ->get();
         return $data;
     }
 

@@ -15,7 +15,8 @@ class GroupController extends Controller
         return Group::orderBy('state')->get();
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $group = Group::find($id);
 
         return response()->json([
@@ -45,7 +46,7 @@ class GroupController extends Controller
     }
     public function store(Request $request)
     {
-        
+
         $group = Group::create([
             'name' => $request['name'],
             'addres' => $request['addres'],
@@ -55,17 +56,17 @@ class GroupController extends Controller
         foreach ($request->units as $unidad) {
             $unit = Unit::create(
                 [
-                    'name' => $unidad ['name'],
+                    'name' => $unidad['name'],
                     'group_id' => $group->id,
-                    'image' => $unidad ['img'],
-                    'type' => $unidad ['type'],
+                    'image' => $unidad['img'],
+                    'type' => $unidad['type'],
                 ]
             );
-            foreach($unidad['teams'] as $equipo){
+            foreach ($unidad['teams'] as $equipo) {
                 Team::create(
-                    [   
-                        'name' => $equipo ['name'],
-                        'unit_id' =>$unit->id,
+                    [
+                        'name' => $equipo['name'],
+                        'unit_id' => $unit->id,
                     ]
                 );
             }
@@ -79,11 +80,12 @@ class GroupController extends Controller
         );
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $group = Group::find($id);
 
         $group->update($request->all());
-        
+
         return response()->json(
             [
                 'data' => $group,
@@ -92,26 +94,44 @@ class GroupController extends Controller
             200
         );
     }
-    
-    public function destroy($id){
-        $group = Group::find($id);
-        $group->update([
-            'state' => 'D'
-        ]);
-        
-        return response()->json([
-            'message'=> 'Grupo Eliminado'
-        ]);
+
+    public function destroy($id)
+    {
+        // $group = Group::find($id);
+        $group = Group::where('id', $id)->with('units')->first();
+        $aux = false;
+        foreach ($group->units as $u) {
+            if ($u->state == 'A')
+                $aux = true;
+        }
+
+        if($aux != true){
+            $group->update([
+                'state' => 'D'
+            ]);
+            return response()->json([
+                'message' => 'Grupo eliminado',
+                'success' => 1
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'Este grupo cuenta con unidades activas',
+                'success' => 0
+            ]);
+        }
+
     }
 
-    public function validateGroup($codigo){
+    public function validateGroup($codigo)
+    {
         $group = Group::where('cod_grupo', $codigo)->get();
         return response()->json([
             'group' => $group
         ]);
     }
 
-    public function activate($groupid){
+    public function activate($groupid)
+    {
         $group = Group::find($groupid);
         $group->update([
             'state' => 'A'
@@ -121,6 +141,5 @@ class GroupController extends Controller
             'success' => 1,
             'group' => $group
         ]);
-        
     }
 }

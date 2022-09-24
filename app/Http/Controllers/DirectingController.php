@@ -16,10 +16,10 @@ class DirectingController extends Controller
             [
                 'name' => $request->name,
                 'email' => $request->email,
-        		'password' => Hash::make($request->dni),
+                'password' => Hash::make($request->dni),
             ]
         );
-        $request->merge(['user_id' => $user->id]) ;
+        $request->merge(['user_id' => $user->id]);
         $directing = Directing::create($request->all());
 
         $directing->roles()->attach($request->role_id);
@@ -37,11 +37,11 @@ class DirectingController extends Controller
     {
         $user = Auth::user();
         $role = User::find($user->id)->roles()->first();
-        if($role->id == 1 || $role->id == 2){
+        if ($role->id == 1 || $role->id == 2) {
             $directings = Directing::getAllDirecting();
-        }else{
+        } else {
             $directing =  User::with('person')->where('id', $user->id)->first();
-            $directings = Directing::directingsByGroup($directing->unit->group->id) ;
+            $directings = Directing::directingsByGroup($directing->unit->group->id);
         }
         return $directings;
     }
@@ -59,7 +59,8 @@ class DirectingController extends Controller
         );
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $user = User::find($id);
 
         $user->update([
@@ -73,7 +74,8 @@ class DirectingController extends Controller
         ]);
     }
 
-    public function activate($id){
+    public function activate($id)
+    {
         $user = User::find($id);
         $user->update([
             'state' => 'A'
@@ -93,6 +95,24 @@ class DirectingController extends Controller
             'success' => 1,
             'profile' => $directing->unit
         ]);
-
     }
+
+    public function directingsByUnit($unit){
+        $directings = Directing::with('person')->where('unit_id', $unit)->get();
+        return response()->json([
+            'success'=>1,
+            'directings' => $directings 
+        ]);
+    }
+
+    // public function directingsByGroup()
+    // {
+    //     $user = Auth::user();
+    //     $unit = Directing::where('person_id', $user->person_id)->first()->unit;
+
+    //     return response()->json([
+    //         'success'=> 1,
+    //         'directings' => $unit
+    //     ]);
+    // }
 }

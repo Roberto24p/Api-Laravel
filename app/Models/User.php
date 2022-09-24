@@ -25,6 +25,9 @@ class User extends Authenticatable
         'person_id',
         'state'
     ];
+    protected $with = [
+        'roles'
+    ] ;
 
     public function person(){
         return $this->belongsTo(Person::class);

@@ -21,6 +21,10 @@ use stdClass;
 
 class ReportController extends Controller
 {
+    public function teamScoutsDetails()
+    {
+        
+    }
 
     public function directingDetails()
     {
@@ -224,21 +228,21 @@ class ReportController extends Controller
         }
         $auxL = $list;
         $aux = false;
-        foreach ($groups as $g) {
-            foreach ($list as $l) {
-                if ($l->id == $g->id) {
-                    $aux = true;
-                }
-            }
-            if ($aux == false) {
-                $obj =  new \stdClass();
-                $obj->name = $g->name;
-                $obj->size = 0;
-                $obj->id = $g->id;
-                array_push($list, $obj);
-            }
-            $aux = false;
-        }
+        // foreach ($groups as $g) {
+        //     foreach ($list as $l) {
+        //         if ($l->id == $g->id) {
+        //             $aux = true;
+        //         }
+        //     }
+        //     if ($aux == false) {
+        //         $obj =  new \stdClass();
+        //         $obj->name = $g->name;
+        //         $obj->size = 0;
+        //         $obj->id = $g->id;
+        //         array_push($list, $obj);
+        //     }
+        //     $aux = false;
+        // }
 
         $dateNow = date('l jS \of F Y ', time());
         $pdf = Pdf::LoadView('reports.scoutsGroup', [
@@ -251,8 +255,8 @@ class ReportController extends Controller
     }
     public function graphicInscriptionsGroups()
     {
-        $periodId = 2;
-        $inscriptions = Inscription::cantidadInscritosxgrupos($periodId);
+        $period = Period::where('state', 'Activo')->first();
+        $inscriptions = Inscription::cantidadInscritosxgrupos($period->id);
         $groups = Group::all();
         $acum = 0;
         $teamGroup = '';
@@ -310,6 +314,69 @@ class ReportController extends Controller
         ]);
     }
 
+    public function graphicScoutsRecognitions(){
+
+    }
+
+    public function graphicsMoneyInscriptionsByPeriod($periodId){
+        $period = Period::where('id', $periodId)->first();
+        $inscriptions = Inscription::cantidadInscritosxgrupos($period->id);
+        $groups = Group::all();
+        $acum = 0;
+        $teamGroup = '';
+        $listGroup = [];
+        $listSize = [];
+        foreach ($inscriptions as $clave => $i) {
+            $obj =  new \stdClass();
+            if ($clave == 0) {
+                $acum = $acum + 1;
+                $teamGroup = $i->name;
+            } else {
+                if (count($inscriptions) == intval($clave) + 1) {
+                    $obj->id = $i->id;
+                    $obj->name = $teamGroup;
+                    $obj->size = ($acum + 1 )*($period->price);
+                    array_push($listGroup, $obj->name);
+                    array_push($listSize, $obj->size);
+                } else {
+                    if ($teamGroup != $i->name) {
+                        $obj->id = $i->id;
+                        $obj->name = $teamGroup;
+                        $obj->size = $acum*($period->price);
+                        $acum = 1;
+                        array_push($listGroup, $obj->name);
+                        array_push($listSize, $obj->size);
+                        $teamGroup = $i->name;
+                    } else {
+                        $acum = $acum + 1;
+                    }
+                }
+            }
+        }
+        $aux = false;
+        foreach ($groups as $g) {
+            foreach ($listGroup as $l) {
+                if ($l == $g->name) {
+                    $aux = true;
+                }
+            }
+            if ($aux == false) {
+                $obj =  new \stdClass();
+                $obj->name = $g->name;
+                $obj->size = 0;
+                $obj->id = $g->id;
+                array_push($listGroup, $obj->name);
+                array_push($listSize, $obj->size);
+            }
+            $aux = false;
+        }
+
+
+        return response()->json([
+            "groups" => $listGroup,
+            "size" => $listSize
+        ]);
+    }
     public function AllInscriptionsByPeriod()
     {
         return Excel::download(new InscriptionsExport, 'users.xlsx');

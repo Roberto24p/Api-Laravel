@@ -219,6 +219,7 @@ class AdvancePlanController extends Controller
         $adv = AdvancePlan::where('type', $scout->type)->first();
         $recog = $adv->recognitions;
         $recogCumplidos = [];
+        $recogIncumplidos = [];
         foreach ($recog as $r) {
             $acum = 0;
             foreach ($r->topics as $topic) {
@@ -230,12 +231,15 @@ class AdvancePlanController extends Controller
             }
             if ($acum == count($r->topics)) {
                 array_push($recogCumplidos, $r);
+            }else{
+                array_push($recogIncumplidos, $r);
             }
             $acum = 0;
         }
 
         return response()->json([
             'recog' => $recogCumplidos,
+            'recogIncump' => $recogIncumplidos,
             'success' => 1
         ]);
     }

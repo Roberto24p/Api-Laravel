@@ -18,8 +18,7 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\RangeController;
 use App\Http\Controllers\RecoverPasswordController;
 use App\Http\Controllers\ReportController;
-use App\Models\AdvancePlan;
-use App\Models\RecoverPassword;
+
 use Monolog\Handler\GroupHandler;
 
 /*
@@ -120,7 +119,7 @@ Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
 		'edit', 'create'
 	]);
 	Route::get('directing/activate/{directingId}', [DirectingController::class, 'activate']);
-
+	Route::get('directings/unit/{unit}', [DirectingController::class, 'directingsByUnit']);
 	// Route::get('unit/directing/table', [UnitController::class, 'showToDirecting']);
 	Route::get('unit/activate/{unitId}', [UnitController::class, 'activate']);
 	Route::get('unit/directing', [UnitController::class, 'indexByDirecting']);
@@ -156,6 +155,7 @@ Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
 	Route::get('team/unit/{unitid}', [TeamController::class, 'getByUnit']);
 	Route::post('team/scout/', [TeamController::class, 'teamScout']);
 	Route::get('team/activate/{teamId}', [TeamController::class, 'activate']);
+	Route::get('team/directing/group', [TeamController::class, 'allTeamsByDirectingGroup']);
 
 	//Reportes
 	Route::get('pdf/inscriptions/groups/{periodId}', [ReportController::class, 'pdfInscriptionsGroups']);
@@ -163,7 +163,7 @@ Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
 	Route::get('pdf/inscriptions/unit', [ReportController::class, 'scoutsInscriptionsUnit']);
 	Route::get('graphicreport/inscription/groups/', [ReportController::class, 'graphicInscriptionsGroups']);
 	Route::get('graphicreport/inscriptions/unit/', [ReportController::class, 'graphicScoutsInscriptionsUnit']);
-
+	Route::get('graphicreport/periods/money/{perioId}', [ReportController::class, 'graphicsMoneyInscriptionsByPeriod']);
 
 	Route::get('user/delete/{userId}', [UserController::class, 'delete']);
 });

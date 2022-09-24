@@ -57,6 +57,7 @@
                     <tr>
                         <th>Nombre</th>
                         <th>Unidad</th>
+                        <th>Cargo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,6 +69,10 @@
                                 </td>
                                 <td>
                                     {{ $u->name }}
+                                </td>
+                                <td>
+                                    {{ $d->person->user->roles[0]->nombre }}
+
                                 </td>
                             </tr>
                         @endforeach

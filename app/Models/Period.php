@@ -14,7 +14,8 @@ class Period extends Model
         'date_start',
         'date_end',
         'description',
-        'state'
+        'state',
+        'price'
     ];
 
     public static function periodNow(){

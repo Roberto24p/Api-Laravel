@@ -79,22 +79,37 @@ class UnitController extends Controller
 
     public function destroy($id)
     {
-        $unit = Unit::find($id);
-        $unit->update([
-            'state' => 'D'
-        ]);
-
-        return response()->json(
-            [
-                'message' => 'Unidad eliminada',
-                'group' => $unit
-            ]
-        );
+        $unit = Unit::where('id', $id)->with('teams')->first();
+        $aux = false;
+        foreach($unit->teams as $t){
+            if($t->state == 'A')
+                $aux = true;
+        }
+        if ($aux != true) {
+            $unit->update([
+                'state' => 'D'
+            ]);
+            return response()->json(
+                [
+                    'message' => 'Unidad eliminada',
+                    'group' => $unit,
+                    'success' => 1
+                ]
+            );
+        } else {
+            return response()->json(
+                [
+                    'message' => 'Esta unidad cuenta con equipos activos ',
+                    'group' => $unit,
+                    'success' => 0
+                ]
+            );
+        }
     }
 
     public function showByGroup($id)
     {
-        $unitsByGroup = Unit::where('group_id', $id)->get();
+        $unitsByGroup = Unit::where('group_id', $id)->where('state', 'A')->get();
         return $unitsByGroup;
     }
 
