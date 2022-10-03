@@ -46,6 +46,7 @@ class AdvancePlanController extends Controller
     public function updateAdvancePlan(Request $request)
     {
         //validar si se puede actualizar el Plan de Adelanto
+
         $advancePlan = AdvancePlan::with('recognitions')->where('id', $request->advancePlanId)->first();
 
         foreach ($advancePlan->recognitions as $recog) {
@@ -58,6 +59,7 @@ class AdvancePlanController extends Controller
                 }
             }
         }
+        
         $response = AdvancePlan::where('id', $request->advancePlanId)
             ->update([
                 'Description' => $request->description,
@@ -89,10 +91,13 @@ class AdvancePlanController extends Controller
                     $topic = null;
 
                 if ($topic == null) {
-                    Topic::create([
-                        'recognition_id' => $recog->id,
-                        'name' => $item['name']
-                    ]);
+                    if($item['name']!=''){
+                        Topic::create([
+                            'recognition_id' => $recog->id,
+                            'name' => $item['name']
+                        ]);
+                    }
+
                 } else {
                     $topic->update([
                         'name' => $item['name']

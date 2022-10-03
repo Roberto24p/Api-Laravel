@@ -18,7 +18,7 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\RangeController;
 use App\Http\Controllers\RecoverPasswordController;
 use App\Http\Controllers\ReportController;
-
+use App\Models\Directing;
 use Monolog\Handler\GroupHandler;
 
 /*
@@ -118,6 +118,8 @@ Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
 	Route::resource('directing', DirectingController::class)->except([
 		'edit', 'create'
 	]);
+	Route::get('directings/group/{groupId}', [DirectingController::class, 'directingsByGroup']);
+	Route::post('directing/unit', [DirectingController::class, 'setDirectingUnit']);
 	Route::get('directing/activate/{directingId}', [DirectingController::class, 'activate']);
 	Route::get('directings/unit/{unit}', [DirectingController::class, 'directingsByUnit']);
 	// Route::get('unit/directing/table', [UnitController::class, 'showToDirecting']);
@@ -166,6 +168,9 @@ Route::group(['middleware' => ['auth:api', 'scopes:get-groups']], function () {
 	Route::get('graphicreport/periods/money/{perioId}', [ReportController::class, 'graphicsMoneyInscriptionsByPeriod']);
 
 	Route::get('user/delete/{userId}', [UserController::class, 'delete']);
+
+
+	Route::get('profilescoutpage', [ProfileController::class, 'profileScout']);
 });
 Route::get('pdf/directings/registers', [ReportController::class, 'directingsByGroup']);
 Route::get('pdf/directingdetail', [ReportController::class, 'directingDetails']);

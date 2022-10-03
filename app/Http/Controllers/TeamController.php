@@ -14,7 +14,7 @@ class TeamController extends Controller
 
     public function index()
     {
-        $teams = Team::with('unit')->get();
+        $teams = Team::with('unit')->orderBy('state', 'ASC')->get();
         return response()->json([
             'response' => 1,
             'teams' => $teams

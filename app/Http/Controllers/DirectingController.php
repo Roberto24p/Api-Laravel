@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Directing;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Unit;
+use App\Models\Person;
+use App\Models\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -98,10 +101,45 @@ class DirectingController extends Controller
     }
 
     public function directingsByUnit($unit){
-        $directings = Directing::with('person')->where('unit_id', $unit)->get();
+        $directings = Directing::with('person')->with('unit')->where('unit_id', $unit)->get();
+        
+        $units = Unit::where('group_id', Unit::find($unit)->group_id )->get();
         return response()->json([
             'success'=>1,
-            'directings' => $directings 
+            'directings' => $directings,
+            'units' => $units
+        ]);
+    }
+
+    public function setDirectingUnit(Request $request){
+        $directing = Directing::find($request->directingId);
+        $directing->update([
+            'unit_id' => $request->unitId
+        ]);
+        $directing->save();
+
+        return response()->json([
+            'message' => 'Dirigente actualizado correctamente',
+            'success'=> 1,
+            'directing' => $directing
+        ]);
+    }
+
+    public function directingsByGroup($groupId){
+        $group = Group::with('units')->where('id', $groupId)->first();
+        $directingsResult = [];
+
+        foreach($group->units as $unit){
+            foreach($unit->directings as $dir){
+                $directing = Directing::with('person')->with('unit')->where('person_id', $dir->person_id)->first();
+                array_push($directingsResult, $directing);
+            }
+        }
+
+        return response()->json([
+            'success' => 1,
+            'directings' => $directingsResult,
+            'units' => $group->units
         ]);
     }
 

@@ -51,6 +51,7 @@ class Directing extends Model
             ->join('users as us', 'us.person_id', '=','p.id')
             ->join('units as u', 'u.id', '=', 'd.unit_id')
             ->join('groups as g', 'g.id', '=', 'u.group_id')
+            ->orderBy('state', 'ASC')
             ->select('p.name', 'p.last_name', 'g.name as group_name', 'p.born_date', 'p.dni', 'us.id', 'us.state')
             ->get();
         return $result;
