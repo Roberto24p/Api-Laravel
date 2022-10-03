@@ -114,7 +114,7 @@ class ReportController extends Controller
             $acum = 0;
         }
         $group = Group::find($groupId);
-        $dateNow = date('l jS \of F Y ', time());
+        $dateNow = getCurrentDate();
         $pdf = Pdf::LoadView('reports.scoutsUnit', [
             'units' => $report,
             'date' => fechaLatino($dateNow),
@@ -186,7 +186,8 @@ class ReportController extends Controller
             }
             array_push($report, $obj);
         }
-        $dateNow = date('l jS \of F Y ', time());
+        $dateNow = getCurrentDate();
+
 
         $pdf = Pdf::LoadView('reports.advancePlanScout', ['advancePlan' => $report, 'date' => ($dateNow), 'scout' => $scout->person]);
 
@@ -244,7 +245,8 @@ class ReportController extends Controller
         //     $aux = false;
         // }
 
-        $dateNow = date('l jS \of F Y ', time());
+        $dateNow = getCurrentDate();
+
         $pdf = Pdf::LoadView('reports.scoutsGroup', [
             'groups' => $list,
             'date' => $dateNow,

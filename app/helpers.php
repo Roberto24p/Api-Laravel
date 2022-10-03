@@ -19,6 +19,15 @@ function setRange($age, $ranges)
     }
     return $type;
 }
+
+function getCurrentDate(){
+	date_default_timezone_set('America/Guayaquil');
+	$time = time();
+	$fecha = date("Y-m-d H:i:s", $time);	//FECHA Y HORA ACTUAL
+	return $fecha;
+}
+
+
 function fechaLatinoShort($fecha)
 {
     $fecha = substr($fecha, 0, 10);

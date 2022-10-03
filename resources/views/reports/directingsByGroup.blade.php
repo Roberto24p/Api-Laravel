@@ -51,7 +51,7 @@
 
 <body>
     <img style="position: relative; top:25px; height:125px"
-        src="https://scontent.fgye1-1.fna.fbcdn.net/v/t1.6435-9/104264215_1375296942662790_2626700348287070741_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeG-fXYIpoC6dOwecteGSKH9890omTthj3Pz3SiZO2GPcweK1PzgZHKWpIFSNgq3m_O3faSVjaX1RH3J9KNcUTRq&_nc_ohc=fDdjdc8oUeYAX_Ltv4Q&_nc_ht=scontent.fgye1-1.fna&oh=00_AT8AeI-3nbuqiuFaUIxEBNUB0b2RyqQ3xQqAjZlBSAxHGw&oe=6339A185">
+        src="http://localhost:8080/img/logo.88337e3d.png">
     <div style="position:relative; left:210px; bottom: 65px; font-size: 25px">Asociación de Scouts del Guayas</div>
     <div style="position: relative; top:5px"><b>Reporte:</b> Dirigentes por Grupo</div>
     <div style="position: relative; top:5px"><b>Fecha: </b>{{ $date }}</div>
