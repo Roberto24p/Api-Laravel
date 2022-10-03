@@ -92,7 +92,10 @@ class ProfileController extends Controller
             $contd = $recog->topics->count() + $contd;
         }
         $topic = $scout->topics->first();
-        $advancePlan = AdvancePlan::where('id', $topic->recognition->advance_plan_id)->with('recognitions')->get();
+        if($topic != null)
+            $advancePlan = AdvancePlan::where('id', $topic->recognition->advance_plan_id)->with('recognitions')->get();
+        else
+            $advancePlan = null;
         return response()->json([
             'profile' => $profile,
             'data' => $data,
